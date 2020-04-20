@@ -1,0 +1,23 @@
+{
+  "name": "delilah",
+  "version": "1.0.0",
+  "description": "web services to manage delivery service orders for Delilah restó",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DEM18/delilah_resto.git"
+  },
+  "author": "Daniela Moreno",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DEM18/delilah_resto/issues"
+  },
+  "homepage": "https://github.com/DEM18/delilah_resto#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
