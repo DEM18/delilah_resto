@@ -1,16 +1,16 @@
 const users = require('../entities/users');
 
-function getUsernameAndPassword( credentials ) {
-    const { password, username, userEmail  } = credentials;
-
+function findUserBy( emailUsername, password ) {
+    if( emailUsername === undefined || emailUsername === null ) {
+        return false;
+    }
+    
     for( let i = 0; i < users.length; i++ ) {
-        if( users[i].username === username || users[i].email === userEmail && users[i].password === password ) {
-            console.log( 'existe user' );
+        if( (users[i].username === emailUsername || users[i].email === emailUsername) && users[i].password === password ) {
             return true;
         }
     }
-    console.log( 'No existe user' );
     return false;
 }
 
-module.exports.getUsernameAndPassword = getUsernameAndPassword;
+module.exports.findUserBy = findUserBy;
