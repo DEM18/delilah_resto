@@ -4,35 +4,32 @@ const bodyParser = require('body-parser');
 const server = express();
 
 server.use(bodyParser.json());
-
 server.listen(3000, () => {
     console.log('iniciando servidor...');
 });
 
-
-//-----Login-----
+//endpoints 
 
 server.post( '/login', validateCredentials, ( req, res ) => {
-    const { emailUsername, password } = req.body;
+    const { username, password } = req.body;
 
-    if( login.findUserBy( emailUsername, password )) {
+    if( login.findUserBy( username, password )) {
         res.statusCode = 200;
-        console.log("EXITOS");
-        return res.json("Succesfull Log in");
+        return res.json("Succesfull login");
     } else 
         res.statusCode = 404;
-        console.log("NO EXITOS");
         return res.json("User not found");
 });
 
+//function that validates user credentials
 function validateCredentials( req, res, next ) {
-    const { emailUsername, password } = req.body;
-    if( emailUsername === undefined || emailUsername  === null || emailUsername === "" ) {
+    const { username, password } = req.body;
+    if( username === undefined || username  === null || username === "" ) {
         res.statusCode = 400;
-        res.json("Invalid username or email");
+        res.json("Invalid credentials");
     } else if( password === undefined || password === null || password === "" ){
         res.statusCode = 400;
-        res.json("Invalid password");
+        res.json("Invalid credentials");
     }
     next();
 }

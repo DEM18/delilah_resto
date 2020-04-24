@@ -1,12 +1,13 @@
 const users = require('../entities/users');
 
-function findUserBy( emailUsername, password ) {
-    if( emailUsername === undefined || emailUsername === null ) {
+//function that look for user by username and password in database
+function findUserBy( username, password ) {
+    if( username === undefined || username === null ) {
         return false;
     }
     
     for( let i = 0; i < users.length; i++ ) {
-        if( (users[i].username === emailUsername || users[i].email === emailUsername) && users[i].password === password ) {
+        if( (users[i].username === username || users[i].email === username) && users[i].password === password ) {
             return true;
         }
     }
