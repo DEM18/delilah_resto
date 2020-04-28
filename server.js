@@ -1,5 +1,6 @@
 const express = require('express');
-const login = require('./repository/users_repository');
+const user = require('./database/user');
+const users = require('./entities/users'); //luego sacar
 const bodyParser = require('body-parser');
 const server = express();
 
@@ -8,28 +9,54 @@ server.listen(3000, () => {
     console.log('iniciando servidor...');
 });
 
-//endpoints 
+//EndpointsURL
+//agrupar enpoints por usuario, producto..
 
 server.post( '/login', validateCredentials, ( req, res ) => {
     const { username, password } = req.body;
 
-    if( login.findUserBy( username, password )) {
+    if( user.searchUserByCredentials( username, password )) {
         res.statusCode = 200;
         return res.json("Succesfull login");
     } else 
-        res.statusCode = 404;
+        res.statusCode = 400;
         return res.json("User not found");
 });
 
-//function that validates user credentials
-function validateCredentials( req, res, next ) {
+server.post( '/register', validateProperties, ( req, res ) => {
+    const { username, email } = req.body;
+
+    if( !user.findUserBy(  username, email )) {
+        if( user.insertUserInDatabase( req.body )){
+            res.statusCode = 200;
+            return res.json("User registered succefully");
+        } 
+    } else 
+        res.statusCode = 404;
+        return res.json("Username o email ya existente");
+});
+
+//Middlawares
+
+//function that validates user credentials for login
+function validateCredentials( req, res, next ) { 
     const { username, password } = req.body;
-    if( username === undefined || username  === null || username === "" ) {
+    if( !username || !password ) { 
         res.statusCode = 400;
         res.json("Invalid credentials");
-    } else if( password === undefined || password === null || password === "" ){
-        res.statusCode = 400;
-        res.json("Invalid credentials");
-    }
+    } 
     next();
 }
+
+//function that validates properties from register form
+function validateProperties( req, res, next ) {
+    const { username, name_lastname, email, telephone, delivery_address, password } = req.body;
+
+    if( username && name_lastname && email && telephone && delivery_address && password ) {
+        next();
+    } else {
+        res.statusCode = 400;
+        res.json("Invalid properties");
+    }
+}
+
