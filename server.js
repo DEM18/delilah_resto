@@ -1,5 +1,6 @@
 const express = require('express');
 const user = require('./database/user');
+const product = require('./database/product');
 const users = require('./entities/users'); //luego sacar
 const bodyParser = require('body-parser');
 const server = express();
@@ -35,6 +36,16 @@ server.post( '/register', validateProperties, ( req, res ) => {
         res.statusCode = 404;
         return res.json("Username o email ya existente");
 });
+
+server.get('/product', ( res ) => {
+    res.statusCode = 200;
+    res.json( product.getProducts() );
+});
+
+server.get('/favorite', ( res ) => {
+    res.statusCode = 200;
+    res.json(product.getFavoriteProducts());
+})
 
 //Middlawares
 
