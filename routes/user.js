@@ -2,17 +2,20 @@ const userController = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
 
-router.post( '/login', validateCredentials, ( req, res ) => {
+router.post( '/login', validateCredentials, async ( req, res ) => {
     const { username, password } = req.body;
+    let findUser = await userController.searchUserByCredentials( username, password );
 
-    if( userController.searchUserByCredentials( username, password )) {
+    if( findUser.length ) {
         res.statusCode = 200;
-        return res.json("Succesfull login");
-    } else 
-        res.statusCode = 400;
-        return res.json("User not found");
-});
 
+        return res.json("Succesfully login");
+    } else {
+        res.statusCode = 400;
+
+        return res.json("User not found");
+    } 
+});
 
 
 //function that validates user credentials for login
