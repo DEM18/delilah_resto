@@ -1,5 +1,6 @@
 const express = require('express');
 const router = require('./routes/user');
+const router_product = require('./routes/product');
 const bodyParser = require('body-parser');
 const server = express();
 
@@ -9,6 +10,7 @@ server.listen(3000, () => {
 });
 
 server.use(router);
+server.use(router_product);
 
 
 
