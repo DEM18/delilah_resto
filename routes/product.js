@@ -11,6 +11,15 @@ router_product.post('/createfavorite', async ( req, res ) => {
     }
 });
 
+router_product.get('/favorite', async ( req, res ) => {
+    let favoriteProducts = await productController.getFavoriteProducts();
+
+    if( favoriteProducts ) {
+        res.statusCode = 200;
+        res.json( favoriteProducts );
+    }
+});
+
 router_product.get('/product', async ( req, res ) => {
     let products = await productController.getProducts();
 

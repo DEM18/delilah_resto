@@ -21,17 +21,10 @@ async function insertFavoriteProduct( productId ){
     return saveFavoriteProduct;
 }
 
-//function that returns array of favorites products with its description, price and image.
-function getFavoriteProducts() {
-    let favoriteProducts = [];
+//function that returns array of favorites products
+async function getFavoriteProducts() {
+    let favoriteProducts = await databaseModel.FavoriteProducts.find();
 
-    products.favorites.forEach( favoriteProduct => {
-        products.products.forEach( product => {
-            if( favoriteProduct.product_id === product.id ){
-                favoriteProducts.push( product );
-            }
-        });
-    });
     return favoriteProducts;
 }
 
