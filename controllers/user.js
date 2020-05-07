@@ -1,18 +1,12 @@
-/* const users = require('../entities/users'); */
 /* const validateProperty = require('../library/validateproperty'); */
 const databaseModel = require('../models/Users'); 
 
-//function that look for user by username and password in database
-function searchUserByCredentials( username, password ) {
-    if( !username ) {
-        return false;
-    }
-    for( let i = 0; i < users.length; i++ ) {
-        if( (users[i].username === username || users[i].email === username) && users[i].password === password ) {
-            return true;
-        }
-    }
-    return false;
+//function that look for user by username or email and password in database
+async function searchUserByCredentials( username, password ) {
+    let user = await databaseModel.Users.find( { $and: [ { $or: [ { username: username }, { email: username } ]}, { password: password}]})
+    .then(user => user);
+
+    return user;
 }
 
 //function that search user for username and email in database
