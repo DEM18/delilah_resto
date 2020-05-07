@@ -9,7 +9,13 @@ const productsSchema =  new mongoose.Schema({
     image: String,
 });
 
+const favoriteProductsSchema =  new mongoose.Schema({ 
+    product_id: Number, 
+});
+
 //create products model from usersSchema
 const Products = mongoose.model("Products", productsSchema); 
+const FavoriteProducts = mongoose.model("FavoriteProducts", favoriteProductsSchema);
 
 module.exports.Products = Products;
+module.exports.FavoriteProducts = FavoriteProducts;gi
