@@ -1,15 +1,18 @@
 const userController = require('../controllers/user');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
+const firma = "mytokenpassword";
 
 router.post( '/login', validateCredentials, async ( req, res ) => {
     const { username, password } = req.body;
     let findUser = await userController.searchUserByCredentials( username, password );
 
     if( findUser.length ) {
+        const token = jwt.sign( username, firma );
         res.statusCode = 200;
 
-        return res.json("Succesfully login");
+        return res.json( token );
     } else {
         res.statusCode = 400;
 
