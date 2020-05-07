@@ -18,4 +18,4 @@ const Products = mongoose.model("Products", productsSchema);
 const FavoriteProducts = mongoose.model("FavoriteProducts", favoriteProductsSchema);
 
 module.exports.Products = Products;
-module.exports.FavoriteProducts = FavoriteProducts;gi
+module.exports.FavoriteProducts = FavoriteProducts;

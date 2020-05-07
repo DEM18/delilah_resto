@@ -2,10 +2,14 @@ const productController = require('../controllers/product');
 const express = require('express');
 const router_product = express.Router();
 
-router_product.get('/favorite', ( res ) => {
-    res.statusCode = 200;
-    res.json(product.getFavoriteProducts());
-})
+router_product.post('/createfavorite', async ( req, res ) => {
+    let favoriteProduct = await productController.insertFavoriteProduct( req.body );
+
+    if( favoriteProduct ) {
+        res.statusCode = 200;
+        res.json("favorite product added sucessfully");
+    }
+});
 
 router_product.get('/product', async ( req, res ) => {
     let products = await productController.getProducts();

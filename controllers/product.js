@@ -14,6 +14,13 @@ async function insertProduct( product ) {
     return saveProduct;
 }
 
+async function insertFavoriteProduct( productId ){
+    const newFavoriteProduct = new databaseModel.FavoriteProducts( productId );
+
+    let saveFavoriteProduct = await newFavoriteProduct.save();
+    return saveFavoriteProduct;
+}
+
 //function that returns array of favorites products with its description, price and image.
 function getFavoriteProducts() {
     let favoriteProducts = [];
@@ -31,3 +38,4 @@ function getFavoriteProducts() {
 module.exports.getProducts = getProducts;
 module.exports.getFavoriteProducts = getFavoriteProducts;
 module.exports.insertProduct = insertProduct;
+module.exports.insertFavoriteProduct = insertFavoriteProduct;
