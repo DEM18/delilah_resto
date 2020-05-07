@@ -1,9 +1,39 @@
-server.get('/favorite', ( res ) => {
-    res.statusCode = 200;
-    res.json(product.getFavoriteProducts());
-})
+const productController = require('../controllers/product');
+const express = require('express');
+const router_product = express.Router();
 
-server.get('/product', ( res ) => {
-    res.statusCode = 200;
-    res.json( product.getProducts() );
+router_product.post('/createfavorite', async ( req, res ) => {
+    let favoriteProduct = await productController.insertFavoriteProduct( req.body );
+
+    if( favoriteProduct ) {
+        res.statusCode = 200;
+        res.json("favorite product added sucessfully");
+    }
 });
+
+router_product.get('/favorite', async ( req, res ) => {
+    let favoriteProducts = await productController.getFavoriteProducts();
+
+    if( favoriteProducts ) {
+        res.statusCode = 200;
+        res.json( favoriteProducts );
+    }
+});
+
+router_product.get('/product', async ( req, res ) => {
+    let products = await productController.getProducts();
+
+    res.statusCode = 200;
+    res.json( products );
+});
+
+router_product.post('/createproduct', async ( req, res ) => {
+    let saveProduct = await productController.insertProduct( req.body );
+
+    if( saveProduct ) {
+        res.statusCode = 200;
+        res.json("product added sucessfully");
+    }
+});
+
+module.exports = router_product;
