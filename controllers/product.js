@@ -1,8 +1,10 @@
 const databaseModel = require('../models/Products'); 
 
 //function that returns array of all products.
-function getProducts() {
-    return products.products;
+async function getProducts() {
+    let products = await databaseModel.Products.find();
+
+    return products;
 }
 
 async function insertProduct( product ) {
@@ -28,5 +30,4 @@ function getFavoriteProducts() {
 
 module.exports.getProducts = getProducts;
 module.exports.getFavoriteProducts = getFavoriteProducts;
-
 module.exports.insertProduct = insertProduct;
