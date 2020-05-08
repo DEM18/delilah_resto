@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
 const router_product = express.Router();
 
-router_product.post('/createfavorite', async ( req, res ) => {
+router_product.post('/createfavorite', validateToken, async ( req, res ) => {
     let favoriteProduct = await productController.insertFavoriteProduct( req.body );
 
     if( favoriteProduct ) {
@@ -13,7 +13,7 @@ router_product.post('/createfavorite', async ( req, res ) => {
     }
 });
 
-router_product.get('/favorite', async ( req, res ) => {
+router_product.get('/favorite', validateToken, async ( req, res ) => {
     let favoriteProducts = await productController.getFavoriteProducts();
 
     if( favoriteProducts ) {
@@ -29,7 +29,7 @@ router_product.get('/product', validateToken, async ( req, res ) => {
     res.json( products );
 });
 
-router_product.post('/createproduct', async ( req, res ) => {
+router_product.post('/createproduct', validateToken, async ( req, res ) => {
     let saveProduct = await productController.insertProduct( req.body );
 
     if( saveProduct ) {
