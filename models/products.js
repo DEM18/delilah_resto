@@ -13,7 +13,7 @@ const favoriteProductsSchema =  new mongoose.Schema({
     product_id: Number, 
 });
 
-//create products model from usersSchema
+//create products model from Schema
 const Products = mongoose.model("Products", productsSchema); 
 const FavoriteProducts = mongoose.model("FavoriteProducts", favoriteProductsSchema);
 
