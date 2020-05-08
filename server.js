@@ -1,6 +1,7 @@
 const express = require('express');
 const router = require('./routes/user');
 const router_product = require('./routes/product');
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const server = express();
 
