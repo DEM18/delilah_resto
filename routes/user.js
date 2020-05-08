@@ -2,14 +2,14 @@ const userController = require('../controllers/user');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const firma = "mytokenpassword";
+const jwtSign = "mytokenpassword";
 
 router.post( '/login', validateCredentials, async ( req, res ) => {
     const { username, password } = req.body;
     let findUser = await userController.searchUserByCredentials( username, password );
 
     if( findUser.length ) {
-        const token = jwt.sign( username, firma );
+        const token = jwt.sign( username, jwtSign );
         res.statusCode = 200;
 
         return res.json( token );
@@ -61,3 +61,4 @@ function validateProperties( req, res, next ) {
 }
 
 module.exports = router;
+module.exports.jwtSign = jwtSign;
