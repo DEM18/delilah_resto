@@ -9,8 +9,12 @@ const productsSchema =  new mongoose.Schema({
     image: String,
 });
 
+//create schema for favorite products
 const favoriteProductsSchema =  new mongoose.Schema({ 
-    product_id: Number, 
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Products"
+    }
 });
 
 //create products model from usersSchema

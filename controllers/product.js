@@ -14,11 +14,33 @@ async function insertProduct( product ) {
     return saveProduct;
 }
 
-async function insertFavoriteProduct( productId ){
-    const newFavoriteProduct = new databaseModel.FavoriteProducts( productId );
+async function clearDocuments() {
+    let clearResult = await databaseModel.FavoriteProducts.deleteMany( {} )
+    .then( result => result );
 
-    let saveFavoriteProduct = await newFavoriteProduct.save();
-    return saveFavoriteProduct;
+    return clearResult;
+}
+ 
+//function that finds product in database
+async function existProduct( productId ) {
+    let product = await databaseModel.Products.find({ _id: productId})
+    .then( product => product );
+
+    return product;
+}
+
+async function insertFavoriteProduct( productId ){
+    if( !existProduct.length ) {
+        let newProductId = { product: productId};
+        const newFavoriteProduct = new databaseModel.FavoriteProducts( newProductId );
+        let saveFavoriteProduct = await newFavoriteProduct.save();
+
+    } else {
+        console.log("el producto existe en la tabla ")
+        return false;
+    }
+
+    /* return saveFavoriteProduct; */
 }
 
 //function that returns array of favorites products
@@ -32,3 +54,4 @@ module.exports.getProducts = getProducts;
 module.exports.getFavoriteProducts = getFavoriteProducts;
 module.exports.insertProduct = insertProduct;
 module.exports.insertFavoriteProduct = insertFavoriteProduct;
+module.exports.clearDocuments = clearDocuments;
