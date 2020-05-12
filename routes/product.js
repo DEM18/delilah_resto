@@ -4,12 +4,21 @@ const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
 const router_product = express.Router();
 
-router_product.post('/createfavorite', validateToken, async ( req, res ) => {
-    let favoriteProduct = await productController.insertFavoriteProduct( req.body );
-
-    if( favoriteProduct ) {
-        res.statusCode = 200;
-        res.json("favorite product added sucessfully");
+router_product.post('/createfavorite', validateToken, validateProperties, async ( req, res ) => {
+    let clearResult = await productController.clearFavoriteDocuments();
+    //clear favorite table before insert new one
+    if( clearResult.ok === 1 ) {
+        //validate previously if product exists in Product table
+        let existProducts = await productController.validateProduct( req.body.products );
+            if( existProducts ) {
+                req.body.products.forEach( async (productId) => {
+                    await productController.insertFavoriteProduct( productId );
+                 });
+                res.statusCode = 200;
+                return res.json("favorite products added sucessfully"); 
+            } 
+        res.statusCode = 400;
+        return res.json("favorite product already exists"); 
     }
 });
 
@@ -51,6 +60,22 @@ function validateToken( req, res , next ) {
         res.statusCode = 401;
         res.json(error);
   }
+}
+
+//function that validates properties sent by request 
+function validateProperties( req, res, next ) {
+    if( Array.isArray(req.body.products) && req.body.products.length ) {
+        req.body.products.forEach( productId => {
+            if( !productId ) {
+                res.statusCode = 400;
+                return res.json("Invalid properties");
+            } 
+        })
+        next(); 
+    } else {
+    res.statusCode = 400;
+    return res.json("Invalid properties");  
+    }
 }
 
 
