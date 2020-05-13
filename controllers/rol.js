@@ -32,7 +32,16 @@ async function getRoleby( id ) {
     return role;
 }
 
+//function that returns a role id by description
+async function getRoleDescriptionId( description ) {
+    let roleId = await databaseModel.Roles.find({ description: description })
+    .then( role => role[0]._id );
+
+    return roleId;
+}
+
 module.exports.clearRolesDocuments = clearRolesDocuments;
 module.exports.getRoles = getRoles;
 module.exports.insertRole = insertRole;
 module.exports.getRoleby = getRoleby;
+module.exports.getRoleDescriptionId = getRoleDescriptionId;
