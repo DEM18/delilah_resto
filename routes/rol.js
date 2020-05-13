@@ -1,8 +1,10 @@
 const rolController = require('../controllers/rol');
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const jwtSign = "mytokenpassword";
 const router_rol = express.Router();
 
-router_rol.post('/createrole', validateRolProperties, async ( req, res ) => {
+router_rol.post('/createrole', validateToken, validateRolProperties, async ( req, res ) => {
     let saveRole = await rolController.insertRole( req.body );
 
     if( saveRole ) {
@@ -12,14 +14,14 @@ router_rol.post('/createrole', validateRolProperties, async ( req, res ) => {
      
 });
 
-router_rol.get('/role', async ( req, res ) => {
+router_rol.get('/role', validateToken,  async ( req, res ) => {
     let roles = await rolController.getRoles();
 
     res.statusCode = 200;
     res.json( roles );
 });
 
-router_rol.get('/role/:id', async ( req, res ) => {
+router_rol.get('/role/:id', validateToken, async ( req, res ) => {
     const roleId = req.params.id;
     let rol = await rolController.getRoleby( roleId )
     .then( result => result );
@@ -41,5 +43,19 @@ function validateRolProperties(  req, res, next ) {
     }
 }
 
+//function that verifies token generated
+function validateToken( req, res , next ) {
+    try { 
+        const token = req.headers.authorization.split(' ')[1];
+        const verifyToken = jwt.verify( token, jwtSign );
+
+        if( verifyToken ) {
+            return next();
+        } 
+    } catch( error ) {
+        res.statusCode = 401;
+        res.json(error);
+  }
+}
 
 module.exports = router_rol;
