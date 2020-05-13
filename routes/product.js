@@ -38,7 +38,7 @@ router_product.get('/product', validateToken, async ( req, res ) => {
     res.json( products );
 });
 
-router_product.post('/createproduct', validateToken, async ( req, res ) => {
+router_product.post('/createproduct', validateToken, validateProductProperties, async ( req, res ) => {
     let saveProduct = await productController.insertProduct( req.body );
 
     if( saveProduct ) {
@@ -77,6 +77,20 @@ function validateProperties( req, res, next ) {
     return res.json("Invalid properties");  
     }
 }
+
+//function that validates properties sent by request
+function validateProductProperties( req, res , next ){
+    const { name, image, price  } = req.body;
+
+    if( name && image && price ) {
+        next();
+    } else {
+        res.statusCode = 400;
+        res.json("Invalid properties");
+    }
+}
+
+
 
 
 module.exports = router_product;
