@@ -24,12 +24,20 @@ async function clearRolesDocuments() {
     return clearResult;
 }
 
-//function that returns a role by id
+//function that searches by role id and returns a role
 async function getRoleby( id ) {
     let role = await databaseModel.Roles.find({ _id: id })
     .then( result => result );
 
     return role;
+}
+
+//function that searches by role id and returns its description
+async function getRoleby( id ) {
+    let roleDescription = await databaseModel.Roles.find({ _id: id })
+    .then( role => role[0].description );
+
+    return roleDescription;
 }
 
 //function that returns a role id by description

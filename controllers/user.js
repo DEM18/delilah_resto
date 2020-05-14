@@ -47,11 +47,30 @@ async function insertUserRole( userRole ) {
     return saveUserRole;
 }
 
+//function that searches by username id  and returns role id
+async function getRoleIdBy( usernameId ) {
+    let roleId = await databaseModel.UserRoleSchema.find({ id_user: usernameId })
+    .then( userRole => userRole[0].id_rol );
+
+    return roleId;
+}
+
+//function that searches user by username and returns its id
+async function getUserId( username ) {
+    let userId = await databaseModel.Users.find({ username: username })
+    .then( user => user[0]._id );
+
+    return userId;
+}
+
 
 
 module.exports.searchUserByCredentials = searchUserByCredentials;
 module.exports.findUserBy = findUserBy;
+module.exports.getUserId = getUserId;
+module.exports.getRoleIdBy = getRoleIdBy;
 module.exports.insertUser = insertUser; 
 module.exports.insertUserRole = insertUserRole; 
+
 
 
