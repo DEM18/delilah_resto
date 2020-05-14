@@ -7,6 +7,8 @@ const jwtSign = "mytokenpassword";
 const router_product = express.Router();
 const ROLE_ADMIN_DESCRIPTION = "Administrator";
 
+/*------- Favorite Product ----------*/
+
 router_product.post('/createfavorite', validateToken, validateUserRol, validateProperties, async ( req, res ) => {
     let clearResult = await productController.clearFavoriteDocuments();
     //clear favorite table before insert new one
@@ -34,6 +36,36 @@ router_product.get('/favorite', validateToken, validateUserRol, async ( req, res
     }
 });
 
+router_product.patch('/favorite/:id', validateToken, validateUserRol, validateUpdateProperties,  async ( req, res ) => {
+    const favoriteId = req.params.id;
+    const newProduct = req.body.product;
+    let existProduct = await productController.findProductBy( newProduct );
+        //check previously if favorite product exists in Product table 
+        if( existProduct.length ) {
+            let updateFavorite = await productController.updateFavorite( favoriteId, newProduct );
+
+            if( updateFavorite.ok === 1 ){
+                res.statusCode = 200;
+                res.json(" favorite product updated sucessfully");
+            }
+        }
+        res.statusCode = 400;
+        res.json("Favorite product doesn't exist in Product table");
+})
+
+router_product.delete('/favorite/:id', validateToken, validateUserRol, async( req, res ) => {
+    const favoriteId = req.params.id;
+
+    let deleteFavoriteId = await productController.clearFavoriteProduct( favoriteId );
+
+    if( deleteFavoriteId ) {
+        res.statusCode = 200;
+        res.json("favorite product deleted sucessfully");
+    }
+})
+
+/*------- Product ----------*/
+
 router_product.get('/product', validateToken, validateUserRol, async ( req, res ) => {
     let products = await productController.getProducts();
 
@@ -49,6 +81,32 @@ router_product.post('/createproduct', validateToken, validateUserRol, validatePr
         res.json("product added sucessfully");
     }
 });
+
+router_product.delete('/product/:id', validateToken, validateUserRol, async( req, res ) => {
+    const productId = req.params.id;
+
+    let deleteProductId = await productController.deleteProduct( productId );
+
+    if( deleteProductId ) {
+        res.statusCode = 200;
+        res.json("product deleted sucessfully");
+    }
+})
+
+router_product.patch('/product/:id', validateToken, validateUserRol, validateProductProperties, async ( req, res ) => {
+    const productId = req.params.id;
+    const newProduct = req.body;
+   
+    let updateProduct = await productController.updateProduct( productId, newProduct );
+    //Analyze if update was made sucessfully
+    if( updateProduct.ok === 1 ){
+        res.statusCode = 200;
+        res.json("product updated sucessfully");
+    }
+})
+
+
+/*-------Middlewares --------*/
 
 //function that verifies token generated
 function validateToken( req, res , next ) {
@@ -110,16 +168,28 @@ function validateProperties( req, res, next ) {
 
 //function that validates properties sent by request
 function validateProductProperties( req, res , next ){
+    console.log("validateProductProperties", validateProductProperties);
     const { name, image, price  } = req.body;
 
     if( name && image && price ) {
+        next();
+    } else {
+        console.log("No son validas las properties");
+        res.statusCode = 400;
+        res.json("Invalid properties");
+    }
+}
+
+function validateUpdateProperties( req, res , next ) {
+    const { product } = req.body;
+
+    if( product ) {
         next();
     } else {
         res.statusCode = 400;
         res.json("Invalid properties");
     }
 }
-
 
 
 
