@@ -1,10 +1,12 @@
 const rolController = require('../controllers/rol');
+const userController = require('../controllers/user');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
 const router_rol = express.Router();
+const ROLE_ADMIN_DESCRIPTION = "Administrator";
 
-router_rol.post('/createrole', validateToken, validateRolProperties, async ( req, res ) => {
+router_rol.post('/createrole', validateToken, validateRoleProperties, async ( req, res ) => {
     let saveRole = await rolController.insertRole( req.body );
 
     if( saveRole ) {
@@ -14,14 +16,14 @@ router_rol.post('/createrole', validateToken, validateRolProperties, async ( req
      
 });
 
-router_rol.get('/role', validateToken,  async ( req, res ) => {
+router_rol.get('/role', validateToken, validateUserRol, async ( req, res ) => {
     let roles = await rolController.getRoles();
 
     res.statusCode = 200;
     res.json( roles );
 });
 
-router_rol.get('/role/:id', validateToken, async ( req, res ) => {
+router_rol.get('/role/:id', validateToken, validateUserRol, async ( req, res ) => {
     const roleId = req.params.id;
     let rol = await rolController.getRoleby( roleId )
     .then( result => result );
@@ -31,8 +33,33 @@ router_rol.get('/role/:id', validateToken, async ( req, res ) => {
     
 });
 
+router_rol.delete('/role/:id', validateToken, validateUserRol, async( req, res ) => {
+    const roleId = req.params.id;
+
+    let deleteRoleId = await rolController.deleteRole( roleId );
+
+    if( deleteRoleId ) {
+        res.statusCode = 200;
+        res.json("rol deleted sucessfully");
+    }
+})
+
+router_rol.patch('/role/:id', validateToken, validateUserRol, validateRoleProperties, async ( req, res ) => {
+    const roleId = req.params.id;
+    const newRole = req.body;
+   
+    let updateRole = await rolController.updateRole( roleId, newRole );
+    //Analyze if update was made sucessfully
+    if( updateRole.ok === 1 ){
+        res.statusCode = 200;
+        res.json("role updated sucessfully");
+    }
+})
+
+/*---- Middlewares -----*/
+
 //function that validates properties sent by request
-function validateRolProperties(  req, res, next ) {
+function validateRoleProperties(  req, res, next ) {
     const { description } = req.body;
 
     if( !description ) {
@@ -55,6 +82,33 @@ function validateToken( req, res , next ) {
     } catch( error ) {
         res.statusCode = 401;
         res.json(error);
+  }
+}
+
+//function that validates if user has admin role
+async function validateUserRol( req, res , next ) {
+    try { 
+        const token = req.headers.authorization.split(' ')[1];
+        const verifyToken = jwt.verify( token, jwtSign );
+        //find user id by username in Users table
+        let rolDescription = await userController.getUserId( verifyToken )
+        //find role id by user id in UserRole table
+        .then( async (userId) => await userController.getRoleIdBy( userId )
+            //find role description by role id 
+            .then( async (roleId) => await rolController.getRoleby( roleId )
+                .then( async (rolDesc) => rolDesc )
+            )
+        );
+        if( rolDescription === ROLE_ADMIN_DESCRIPTION ) {
+            next();
+        } else {
+            res.statusCode = 401;
+            res.json("User not authorized");
+        }
+ 
+    } catch( error ) {
+        res.statusCode = 401;
+        res.json(error); 
   }
 }
 

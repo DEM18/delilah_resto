@@ -24,6 +24,14 @@ async function clearRolesDocuments() {
     return clearResult;
 }
 
+//function that deletes one role by id
+async function deleteRole( id ) {
+    let deleteRole = await databaseModel.Roles.deleteOne( { _id: id } )
+    .then( result => result );
+
+    return deleteRole;
+}
+
 //function that searches by role id and returns a role
 async function getRoleby( id ) {
     let role = await databaseModel.Roles.find({ _id: id })
@@ -48,8 +56,18 @@ async function getRoleDescriptionId( description ) {
     return roleId;
 }
 
+//function that updates a role by id
+async function updateRole( id, role ) {
+    let updateRole = await databaseModel.Roles.updateOne( { _id: id }, { $set: role })
+    .then( result => result);
+    
+    return updateRole;
+}
+
 module.exports.clearRolesDocuments = clearRolesDocuments;
+module.exports.deleteRole = deleteRole
 module.exports.getRoles = getRoles;
-module.exports.insertRole = insertRole;
 module.exports.getRoleby = getRoleby;
 module.exports.getRoleDescriptionId = getRoleDescriptionId;
+module.exports.insertRole = insertRole;
+module.exports.updateRole = updateRole;
