@@ -20,18 +20,6 @@ router.post( '/login', validateCredentials, async ( req, res ) => {
     } 
 });
 
-
-//function that validates user credentials for login
-function validateCredentials( req, res, next ) { 
-    const { username, password } = req.body;
-    if( !username || !password ) { 
-        res.statusCode = 400;
-        res.json("Invalid credentials");
-    } 
-    next();
-}
-
-
 router.post( '/register', validateProperties, async ( req, res ) => {
     const { username, email } = req.body;
     let findUser = await userController.findUserBy( username, email );
@@ -59,6 +47,19 @@ function validateProperties( req, res, next ) {
         res.json("Invalid properties");
     }
 }
+
+
+//function that validates user credentials for login
+function validateCredentials( req, res, next ) { 
+    const { username, password } = req.body;
+    if( !username || !password ) { 
+        res.statusCode = 400;
+        res.json("Invalid credentials");
+    } 
+    next();
+}
+
+
 
 module.exports = router;
 module.exports.jwtSign = jwtSign;
