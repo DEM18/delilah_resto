@@ -56,6 +56,8 @@ router_rol.patch('/role/:id', validateToken, validateUserRol, validateRoleProper
     }
 })
 
+
+
 /*---- Middlewares -----*/
 
 //function that validates properties sent by request
