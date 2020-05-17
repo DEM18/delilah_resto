@@ -9,7 +9,7 @@ const ROLE_ADMIN_DESCRIPTION = "Administrator";
 
 /*------- Favorite Product ----------*/
 
-router_product.post('/createfavorite', validateToken, validateUserRol, validateProperties, async ( req, res ) => {
+router_product.post('/createfavorite', validateToken, validateAdminRol, validateProperties, async ( req, res ) => {
     let clearResult = await productController.clearFavoriteDocuments();
     //clear favorite table before insert new one
     if( clearResult.ok === 1 ) {
@@ -27,7 +27,7 @@ router_product.post('/createfavorite', validateToken, validateUserRol, validateP
     }
 });
 
-router_product.get('/favorite', validateToken, validateUserRol, async ( req, res ) => {
+router_product.get('/favorite', validateToken, validateAdminRol, async ( req, res ) => {
     let favoriteProducts = await productController.getFavoriteProducts();
 
     if( favoriteProducts ) {
@@ -36,24 +36,7 @@ router_product.get('/favorite', validateToken, validateUserRol, async ( req, res
     }
 });
 
-router_product.patch('/favorite/:id', validateToken, validateUserRol, validateUpdateProperties,  async ( req, res ) => {
-    const favoriteId = req.params.id;
-    const newProduct = req.body.product;
-    let existProduct = await productController.findProductBy( newProduct );
-        //check previously if favorite product exists in Product table 
-        if( existProduct.length ) {
-            let updateFavorite = await productController.updateFavorite( favoriteId, newProduct );
-
-            if( updateFavorite.ok === 1 ){
-                res.statusCode = 200;
-                res.json(" favorite product updated sucessfully");
-            }
-        }
-        res.statusCode = 400;
-        res.json("Favorite product doesn't exist in Product table");
-})
-
-router_product.delete('/favorite/:id', validateToken, validateUserRol, async( req, res ) => {
+router_product.delete('/favorite/:id', validateToken, validateAdminRol, async( req, res ) => {
     const favoriteId = req.params.id;
 
     let deleteFavoriteId = await productController.clearFavoriteProduct( favoriteId );
@@ -66,14 +49,14 @@ router_product.delete('/favorite/:id', validateToken, validateUserRol, async( re
 
 /*------- Product ----------*/
 
-router_product.get('/product', validateToken, validateUserRol, async ( req, res ) => {
+router_product.get('/product', validateToken, validateAdminRol, async ( req, res ) => {
     let products = await productController.getProducts();
 
     res.statusCode = 200;
     res.json( products );
 });
 
-router_product.post('/createproduct', validateToken, validateUserRol, validateProductProperties, async ( req, res ) => {
+router_product.post('/createproduct', validateToken, validateAdminRol, validateProductProperties, async ( req, res ) => {
     let saveProduct = await productController.insertProduct( req.body );
 
     if( saveProduct ) {
@@ -82,7 +65,7 @@ router_product.post('/createproduct', validateToken, validateUserRol, validatePr
     }
 });
 
-router_product.delete('/product/:id', validateToken, validateUserRol, async( req, res ) => {
+router_product.delete('/product/:id', validateToken, validateAdminRol, async( req, res ) => {
     const productId = req.params.id;
 
     let deleteProductId = await productController.deleteProduct( productId );
@@ -93,11 +76,11 @@ router_product.delete('/product/:id', validateToken, validateUserRol, async( req
     }
 })
 
-router_product.patch('/product/:id', validateToken, validateUserRol, validateProductProperties, async ( req, res ) => {
+router_product.patch('/product/:id', validateToken, validateAdminRol, validateUpdateProperties, async ( req, res ) => {
     const productId = req.params.id;
-    const newProduct = req.body;
+    const newProperties = req.body;
    
-    let updateProduct = await productController.updateProduct( productId, newProduct );
+    let updateProduct = await productController.updateProduct( productId, newProperties );
     //Analyze if update was made sucessfully
     if( updateProduct.ok === 1 ){
         res.statusCode = 200;
@@ -123,8 +106,8 @@ function validateToken( req, res , next ) {
   }
 }
 
-//function that validates if user has admin role
-async function validateUserRol( req, res , next ) {
+//function that validates if user has Admin role
+async function validateAdminRol( req, res , next ) {
     try { 
         const token = req.headers.authorization.split(' ')[1];
         const verifyToken = jwt.verify( token, jwtSign );
@@ -168,28 +151,27 @@ function validateProperties( req, res, next ) {
 
 //function that validates properties sent by request
 function validateProductProperties( req, res , next ){
-    console.log("validateProductProperties", validateProductProperties);
     const { name, image, price  } = req.body;
 
     if( name && image && price ) {
         next();
     } else {
-        console.log("No son validas las properties");
         res.statusCode = 400;
         res.json("Invalid properties");
     }
 }
 
-function validateUpdateProperties( req, res , next ) {
-    const { product } = req.body;
-
-    if( product ) {
-        next();
-    } else {
-        res.statusCode = 400;
-        res.json("Invalid properties");
-    }
-}
+//function that validates properties sent by request 
+function validateUpdateProperties( req, res, next ) {
+    for( let i = 0 ; i < Object.entries( req.body ).length; i++  ) {
+         if( !Object.entries ( req.body )[i][1]) {
+             res.statusCode = 400;
+             return res.json("invalid properties");
+         }
+     }
+     next();
+ }
+ 
 
 
 
