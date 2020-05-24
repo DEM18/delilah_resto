@@ -1,58 +1,58 @@
 const userController = require('../controllers/user');
-const paymentController = require('../controllers/paymentMethod');
+const OrderStatusController = require('../controllers/order');
 const rolController = require('../controllers/rol');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
-const router_payment = express.Router();
+const router_order_status = express.Router();
 const ROLE_ADMIN_DESCRIPTION = "Administrator";
 
-router_payment.post('/createpayment', validateToken, validateUserRol, validatePaymentProps, async ( req, res ) => {
-    let savePayment = await paymentController.insertPaymentMethod( req.body );
+router_order_status.post('/createstatus', validateToken, validateUserRol, validateStatusProps, async ( req, res ) => {
+    let saveOrderStatus = await OrderStatusController.insertOrderStatus( req.body );
 
-    if( savePayment ) {
+    if( saveOrderStatus ) {
         res.statusCode = 200;  
-        return res.json("payment added sucessfully");
+        return res.json("order status added sucessfully");
     }
      
 });
 
-router_payment.get('/paymentmethod', validateToken, validateUserRol, async ( req, res ) => {
-    let paymentMethods = await paymentController.getPaymentMethods();
+router_order_status.get('/status', validateToken, validateUserRol, async ( req, res ) => {
+    let ordersStatus = await OrderStatusController.getOrdersStatus();
 
     res.statusCode = 200;
-    res.json( paymentMethods );
+    res.json( ordersStatus );
 });
 
-router_payment.get('/payment/:id', validateToken, validateUserRol,  async ( req, res ) => {
-    const paymentId = req.params.id;
-    let payment = await paymentController.getPaymentMethodBy( paymentId )
+router_order_status.get('/status/:id', validateToken, validateUserRol, async ( req, res ) => {
+    const statusId = req.params.id;
+    let status = await OrderStatusController.getOrderStatusBy( statusId )
     .then( result => result );
 
     res.statusCode = 200;
-    return res.json(payment);
+    return res.json(status);
     
 });
 
-router_payment.delete('/payment/:id', validateToken, validateUserRol,  async( req, res ) => {
-    const paymentId = req.params.id;
+router_order_status.delete('/status/:id', validateToken, validateUserRol, async( req, res ) => {
+    const statusId = req.params.id;
 
-    let deletePayment = await paymentController.deletePaymentMethod( paymentId );
+    let deleteStatus = await OrderStatusController.deleteOrderStatus( statusId );
 
-    if( deletePayment ) {
+    if( deleteStatus ) {
         res.statusCode = 200;
-        res.json("payment method deleted sucessfully");
+        res.json("Order status deleted sucessfully");
     }
 })
 
-router_payment.patch('/payment/:id', validateToken, validateUserRol, validatePaymentProps, async ( req, res ) => {
-    const paymentId = req.params.id;
+router_order_status.patch('/status/:id', validateStatusProps, validateToken, validateUserRol, async ( req, res ) => {
+    const statusId = req.params.id;
 
-    let updatePayment = await paymentController.updatePaymentMethod( paymentId, req.body.description );
+    let updateStatusId = await OrderStatusController.updateOrderStatus( statusId, req.body.description );
     //Analyze if update was made sucessfully
-    if( updatePayment.ok === 1 ){
+    if( updateStatusId.ok === 1 ){
         res.statusCode = 200;
-        res.json("payment updated sucessfully");
+        res.json("Order status updated sucessfully");
     }
 })
 
@@ -60,7 +60,7 @@ router_payment.patch('/payment/:id', validateToken, validateUserRol, validatePay
 /*---- Middlewares -----*/
 
 //function that validates properties sent by request
-function validatePaymentProps(  req, res, next ) {
+function validateStatusProps(  req, res, next ) {
     const { description } = req.body;
 
     if( !description ) {
@@ -115,4 +115,4 @@ async function validateUserRol( req, res , next ) {
 }
 
 
-module.exports = router_payment;
+module.exports = router_order_status;

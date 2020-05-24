@@ -1,4 +1,4 @@
-const databaseModel = require('../models/orderStatus'); 
+const databaseModel = require('../models/orders'); 
 
 //function that inserts an order status in OrderStatus table
 async function insertOrderStatus( orderStatus ) {
