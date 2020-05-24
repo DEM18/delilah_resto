@@ -32,14 +32,6 @@ async function deletePaymentMethod( paymentMethodId ) {
     return deletePayment;
 }
 
-//function that deletes all documents in PaymentMethods table
-async function deletePaymentMethods() {
-    let clearResult = await databaseModel.PaymentMethods.deleteMany( {} )
-    .then( result => result );
-
-    return clearResult;
-}
-
 //function that updates a payment method by id
 async function updatePaymentMethod( paymentMethodId, description ) {
     let updatePayment = await databaseModel.PaymentMethods.updateOne( { _id: paymentMethodId }, { $set: { description: description} })
@@ -50,7 +42,6 @@ async function updatePaymentMethod( paymentMethodId, description ) {
 
 
 module.exports.deletePaymentMethod = deletePaymentMethod;
-module.exports.deletePaymentMethods = deletePaymentMethods;
 module.exports.getPaymentMethods = getPaymentMethods;
 module.exports.getPaymentMethodBy = getPaymentMethodBy;
 module.exports.insertPaymentMethod = insertPaymentMethod;
