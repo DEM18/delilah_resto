@@ -33,7 +33,31 @@ async function updateProduct( id, product ) {
     return updateProduct;
 }
 
+//function that receives a description and return its Id
+ async function getProductBy( description ) {
+    let productId = await databaseModel.Products.find({ name: description })
+    .then( product => product[0]._id );
 
+    return productId;
+}
+ 
+//function that receives an array of products description and return its Ids
+async function getProductsIdBy ( products ) {
+    let productsId = await products.map( async( description ) => {
+     await getProductBy( description )
+     .then( productId => productId )
+ })
+ return productsId;
+} 
+
+
+async function getProductPrice( productId ) {
+    let productPrice = await databaseModel.Products.find({ _id: productId })
+    .then( product => product[0].price );
+
+    return productPrice;
+    
+}
 /*----- Favorite product -----*/
 
 //function that clears all documents in Favorite Products table
@@ -115,6 +139,9 @@ module.exports.deleteProduct = deleteProduct;
 module.exports.findFavoriteProductId = findFavoriteProductId;
 module.exports.findProductBy = findProductBy;
 module.exports.getProducts = getProducts;
+module.exports.getProductBy = getProductBy;
+module.exports.getProductPrice = getProductPrice;
+module.exports.getProductsIdBy = getProductsIdBy; 
 module.exports.getFavoriteProducts = getFavoriteProducts;
 module.exports.insertProduct = insertProduct;
 module.exports.insertFavoriteProduct = insertFavoriteProduct;

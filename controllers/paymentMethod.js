@@ -24,6 +24,14 @@ async function getPaymentMethodBy( paymentMethodId ) {
 
 }
 
+//function that receives a description and return its Id
+ async function getPaymentIdBy( description ) {
+    let paymentId = await databaseModel.PaymentMethods.find({ description: description })
+    .then( payment => payment[0]._id );
+
+    return paymentId;
+} 
+
 //function that deletes one paymentMethod by id
 async function deletePaymentMethod( paymentMethodId ) {
     let deletePayment = await databaseModel.PaymentMethods.deleteOne( { _id: paymentMethodId } )
@@ -44,5 +52,6 @@ async function updatePaymentMethod( paymentMethodId, description ) {
 module.exports.deletePaymentMethod = deletePaymentMethod;
 module.exports.getPaymentMethods = getPaymentMethods;
 module.exports.getPaymentMethodBy = getPaymentMethodBy;
+module.exports.getPaymentIdBy = getPaymentIdBy; 
 module.exports.insertPaymentMethod = insertPaymentMethod;
 module.exports.updatePaymentMethod = updatePaymentMethod;

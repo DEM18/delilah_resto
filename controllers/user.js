@@ -104,8 +104,6 @@ async function clearUser( id ) {
 async function updateUserRole( id , newRoleId ) {
     let newUserRole = await databaseModel.UserRoleSchema.updateOne( { id_user: id }, { $set: { id_rol: newRoleId } })
     .then( result => result );
-
-    console.log("newUserRole", newUserRole);
     return newUserRole;
 }
 
@@ -124,12 +122,21 @@ async function getUsers() {
     return users;
 }
 
+//function that returns order by id
+async function getUserBy( userId ) {
+    let user = await databaseModel.Users.find( { _id: userId } )
+    .then( result => result );
+
+    return user;
+}
+
 
 module.exports.clearUser = clearUser;
 module.exports.clearUserRole = clearUserRole;
 module.exports.searchUserByCredentials = searchUserByCredentials;
 module.exports.findUserBy = findUserBy;
 module.exports.getUsers = getUsers;
+module.exports.getUserBy = getUserBy;
 module.exports.getUserId = getUserId;
 module.exports.getRoleIdBy = getRoleIdBy;
 module.exports.insertUser = insertUser; 
