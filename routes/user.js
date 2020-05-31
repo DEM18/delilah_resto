@@ -74,9 +74,11 @@ router.delete('/user/:id', validateToken, validateAdminRol, async( req, res ) =>
     if( deleteUserId.ok === 1 ) {
         let deleteUserRoleId = await userController.clearUserRole( userId );
         res.statusCode = 200;
-        res.json("user and user role deleted sucessfully");
+        res.json("user deleted sucessfully");
     }
 })
+
+/*--- User role ----*/
 
 router.patch('/userrole/:id', validateToken, validateAdminRol, validateUpdateUserRoleProps,  async ( req, res ) => {
     const idUser = req.params.id;
@@ -88,8 +90,35 @@ router.patch('/userrole/:id', validateToken, validateAdminRol, validateUpdateUse
         res.statusCode = 200;
         res.json("user role updated sucessfully");
     } 
-})
+});
 
+router.get('/userrole', validateToken, validateAdminRol, async ( req, res ) => {
+    let userRoles = await userController.getUsersRoles();
+
+    res.statusCode = 200;
+    res.json( userRoles );
+});
+
+router.get('/userrole/:id', validateToken, validateAdminRol, async ( req, res ) => {
+    const userRoleId = req.params.id;
+    let userRole = await userController.getUserRoleBy( userRoleId )
+    .then( result => result );
+
+    res.statusCode = 200;
+    return res.json(userRole);
+    
+});
+
+router.delete('/userrole/:id', validateToken, validateAdminRol, async( req, res ) => {
+    const userRoleId = req.params.id;
+
+    let deleteUserRoleId = await userController.deleteUserRole( userRoleId );
+
+    if( deleteUserRoleId ) {
+        res.statusCode = 200;
+        res.json("user role deleted sucessfully");
+    }
+})
 
 //function that validates properties sent by request
 function validateProperties( req, res, next ) {
@@ -116,7 +145,7 @@ function validateUpdateProperties( req, res, next ) {
 
 //function that validates properties sent by request 
 function validateUpdateUserRoleProps(  req, res, next ) {
-    if( !req.body.id_user ) {
+    if( !req.body.id_role ) {
         res.statusCode = 400;
         res.json("Invalid properties");
     } else {

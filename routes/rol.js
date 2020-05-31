@@ -6,12 +6,12 @@ const jwtSign = "mytokenpassword";
 const router_rol = express.Router();
 const ROLE_ADMIN_DESCRIPTION = "Administrator";
 
-router_rol.post('/createrole', validateToken, validateRoleProperties, async ( req, res ) => {
+router_rol.post('/createrole', validateRoleProperties, async ( req, res ) => {
     let saveRole = await rolController.insertRole( req.body );
 
     if( saveRole ) {
         res.statusCode = 200;  
-        return res.json("rol added sucessfully");
+        return res.json("role added sucessfully");
     }
      
 });
@@ -22,17 +22,6 @@ router_rol.get('/role', validateToken, validateUserRol, async ( req, res ) => {
     res.statusCode = 200;
     res.json( roles );
 });
-
-router_rol.get('/role/:id', validateToken, validateUserRol, async ( req, res ) => {
-    const roleId = req.params.id;
-    let rol = await rolController.getRoleby( roleId )
-    .then( result => result );
-
-    res.statusCode = 200;
-    return res.json(rol);
-    
-});
-
 router_rol.delete('/role/:id', validateToken, validateUserRol, async( req, res ) => {
     const roleId = req.params.id;
 
@@ -43,6 +32,17 @@ router_rol.delete('/role/:id', validateToken, validateUserRol, async( req, res )
         res.json("rol deleted sucessfully");
     }
 })
+router_rol.get('/role/:id', validateToken, validateUserRol, async ( req, res ) => {
+    const roleId = req.params.id;
+    let rol = await rolController.getRolebyId( roleId )
+    .then( result => result );
+
+    res.statusCode = 200;
+    return res.json(rol);
+    
+});
+
+
 
 router_rol.patch('/role/:id', validateToken, validateUserRol, validateRoleProperties, async ( req, res ) => {
     const roleId = req.params.id;

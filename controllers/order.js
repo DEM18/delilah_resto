@@ -100,6 +100,15 @@ async function getOrderStatusBy( orderStatusId ) {
 
 }
 
+//function that returns order status by id
+async function getStatusDesc( orderStatusId ) {
+    let statusDesc = await databaseModel.OrderStatus.find( { _id: orderStatusId } )
+    .then( result => result[0].description );
+
+    return statusDesc;
+
+}
+
 //function that returns a status id by its description
 async function getStatusDescriptionId( description ) {
     let statusId = await databaseModel.OrderStatus.find({ description: description })
@@ -137,3 +146,4 @@ module.exports.insertOrder = insertOrder;
 module.exports.insertOrderStatus = insertOrderStatus;
 module.exports.updateOrder = updateOrder;
 module.exports.updateOrderStatus = updateOrderStatus;
+module.exports.getStatusDesc = getStatusDesc;

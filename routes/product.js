@@ -88,6 +88,15 @@ router_product.patch('/product/:id', validateToken, validateAdminRol, validateUp
     }
 })
 
+router_product.get('/product/:id', validateToken, validateAdminRol, async ( req, res ) => {
+    const productId = req.params.id;
+    let product = await productController.getProductById( productId )
+    .then( result => result );
+
+    res.statusCode = 200;
+    return res.json(product);
+    
+});
 
 /*-------Middlewares --------*/
 

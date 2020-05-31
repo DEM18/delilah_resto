@@ -24,6 +24,15 @@ async function getPaymentMethodBy( paymentMethodId ) {
 
 }
 
+//function that searches for payment id and returns payment method description
+async function getPaymentDescription( paymentMethodId ) {
+    let paymentDescription = await databaseModel.PaymentMethods.find( { _id: paymentMethodId } )
+    .then( result => result[0].description );
+
+    return paymentDescription;
+
+}
+
 //function that receives a description and return its Id
  async function getPaymentIdBy( description ) {
     let paymentId = await databaseModel.PaymentMethods.find({ description: description })
@@ -55,3 +64,4 @@ module.exports.getPaymentMethodBy = getPaymentMethodBy;
 module.exports.getPaymentIdBy = getPaymentIdBy; 
 module.exports.insertPaymentMethod = insertPaymentMethod;
 module.exports.updatePaymentMethod = updatePaymentMethod;
+module.exports.getPaymentDescription = getPaymentDescription;

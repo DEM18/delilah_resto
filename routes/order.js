@@ -1,6 +1,8 @@
 const userController = require('../controllers/user');
 const orderController = require('../controllers/order');
+const productController = require('../controllers/product');
 const rolController = require('../controllers/rol');
+const paymentController = require('../controllers/paymentMethod');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
@@ -43,13 +45,25 @@ router_order.get('/order', validateToken, validateRoleAdmin,  async ( req, res )
     let orders = await orderController.getOrders();
       
     let newOrders = [];
+
     for( let i = 0; i <orders.length; i++ ) {
+        let productsDescription = [];
+
+        for( let j = 0; j < orders[i].products_id.length; j++) {
+            let product = await productController.getProductDescription(orders[i].products_id[j]);
+            productsDescription.push(product);  
+        }
+
         let user = await userController.getUserBy(orders[i].id_user);
+        let username = await userController.getUserUsername( orders[i].id_user );
+        let paymentDescription = await paymentController.getPaymentDescription( orders[i].payment_method_id );
+        let statusDesc = await orderController.getStatusDesc( orders[i].status_id );
+
         newOrders.push({
-            products_id: orders[i].products_id,
-            id_user: orders[i].id_user,
-            payment_method_id: orders[i].payment_method_id,
-            status_id: orders[i].status_id,
+            products_description: productsDescription,
+            username: username,
+            payment_description: paymentDescription,
+            status_description: statusDesc,
             total: orders[i].total,
             delivery_address: orders[i].delivery_address,
             username: user[0].username,
@@ -68,15 +82,27 @@ router_order.get('/order/:id', validateToken, validateRoleAdmin, async ( req, re
 
     let order = await orderController.getOrderBy( orderId )
     .then( result => result );
-
-    let newOrder = [];
     let user = await userController.getUserBy(order[0].id_user);
 
+    let productsId = order[0].products_id;
+    let newOrder = [];
+    let productsDescription = [];
+
+    for( i = 0; i < productsId.length; i++) {
+        
+        let product = await productController.getProductDescription(productsId[i]);
+        productsDescription.push(product); 
+    }  
+
+    let username = await userController.getUserUsername( order[0].id_user );
+    let paymentDescription = await paymentController.getPaymentDescription( order[0].payment_method_id );
+    let statusDesc = await orderController.getStatusDesc( order[0].status_id );  
+    
     newOrder.push({
-        products_id: order[0].products_id,
-        id_user: order[0].id_user,
-        payment_method_id: order[0].payment_method_id,
-        status_id: order[0].status_id,
+        products_description: productsDescription,
+        username: username,
+        payment_description: paymentDescription,
+        status_description: statusDesc,
         total: order[0].total,
         delivery_address: order[0].delivery_address,
         username: user[0].username,
@@ -98,20 +124,32 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
         let orders = await userController.getUserId( verifyToken )
             .then( async( userId ) => await orderController.getMyOrders( userId )
                 .then( order => order ) );
-        
-        let newOrders = [];
-        for( let i = 0; i <orders.length; i++ ) {
+ 
+            let newOrders = [];
+            
+            for( let i = 0; i < orders.length; i++ ) {
+                let productsDescription = [];
+                for( let j = 0; j < orders[i].products_id.length; j++) {
+                    let product = await productController.getProductDescription(orders[i].products_id[j]);
+                    productsDescription.push(product);  
+            } 
+
+            let username = await userController.getUserUsername( orders[i].id_user );
+            let paymentDescription = await paymentController.getPaymentDescription( orders[i].payment_method_id );
+            let statusDesc = await orderController.getStatusDesc( orders[i].status_id );
+
             newOrders.push({
-                products_id: orders[i].products_id,
-                id_user: orders[i].id_user,
-                payment_method_id: orders[i].payment_method_id,
-                status_id: orders[i].status_id,
+                products_description: productsDescription,
+                username: username,
+                payment_description: paymentDescription,
+                status_description: statusDesc,
                 total: orders[i].total,
                 delivery_address: orders[i].delivery_address
             })
         }
+
         res.statusCode = 200;
-        return res.json(newOrders);  
+        return res.json(newOrders) ;   
 
     } catch( error ) {
         res.statusCode = 401;
@@ -121,20 +159,42 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
 
  router_order.get('/myorder/:id', validateToken, validateUserRol, async ( req, res ) => {
     const orderId  = req.params.id;
+
     try { 
         const token = req.headers.authorization.split(' ')[1];
         const verifyToken = jwt.verify( token, jwtSign );
 
         let userId = await userController.getUserId( verifyToken );
         let order = await orderController.getOrderBy( orderId );
+        let productsId = order[0].products_id;
 
-        if(order[0].id_user.toString() === userId.toString() ) {
+        if( order[0].id_user.toString() === userId.toString() ) {
+            let newOrder = []; 
+            let productsDescription = [];
+
+            
+            for( i = 0; i < productsId.length; i++) {
+                
+                let product = await productController.getProductDescription(productsId[i]);
+                productsDescription.push(product); 
+            }  
+
+            let username = await userController.getUserUsername( order[0].id_user );
+            let paymentDescription = await paymentController.getPaymentDescription( order[0].payment_method_id );
+            let statusDesc = await orderController.getStatusDesc( order[0].status_id );  
+            
+            newOrder.push({
+                products_description: productsDescription,
+                username: username,
+                payment_description: paymentDescription,
+                status_description: statusDesc,
+                total: order[0].total,
+                });
+
             res.statusCode = 200;
-            return res.json( order ); 
+            return res.json( newOrder );   
         } 
-        res.statusCode = 401;
-        return res.json("User not authorized");
-    
+        
     } catch( error ) {
         res.statusCode = 401;
         return res.json(error); 
@@ -145,7 +205,7 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
 
 /*----- order status ----*/
 
-router_order.post('/createstatus', validateToken, validateUserRol, validateStatusProps, async ( req, res ) => {
+router_order.post('/createstatus', validateToken, validateRoleAdmin, validateStatusProps, async ( req, res ) => {
     let saveOrderStatus = await orderController.insertOrderStatus( req.body );
 
     if( saveOrderStatus ) {
@@ -155,14 +215,14 @@ router_order.post('/createstatus', validateToken, validateUserRol, validateStatu
      
 });
  
-router_order.get('/status', validateToken, validateUserRol, async ( req, res ) => {
+router_order.get('/status', validateToken, validateRoleAdmin, async ( req, res ) => {
     let ordersStatus = await orderController.getOrdersStatus();
 
     res.statusCode = 200;
     res.json( ordersStatus );
 });
 
-router_order.get('/status/:id', validateToken, validateUserRol, async ( req, res ) => {
+router_order.get('/status/:id', validateToken, validateRoleAdmin, async ( req, res ) => {
     const statusId = req.params.id;
     let status = await orderController.getOrderStatusBy( statusId )
     .then( result => result );
@@ -172,7 +232,7 @@ router_order.get('/status/:id', validateToken, validateUserRol, async ( req, res
     
 });
 
-router_order.delete('/status/:id', validateToken, validateUserRol, async( req, res ) => {
+router_order.delete('/status/:id', validateToken, validateRoleAdmin, async( req, res ) => {
     const statusId = req.params.id;
 
     let deleteStatus = await orderController.deleteOrderStatus( statusId );
@@ -183,7 +243,7 @@ router_order.delete('/status/:id', validateToken, validateUserRol, async( req, r
     }
 })
 
-router_order.patch('/status/:id', validateStatusProps, validateToken, validateUserRol, async ( req, res ) => {
+router_order.patch('/status/:id', validateStatusProps, validateToken, validateRoleAdmin, async ( req, res ) => {
     const statusId = req.params.id;
 
     let updateStatusId = await orderController.updateOrderStatus( statusId, req.body.description );

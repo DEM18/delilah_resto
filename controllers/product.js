@@ -58,6 +58,22 @@ async function getProductPrice( productId ) {
     return productPrice;
     
 }
+
+//function that searches by product id and returns a product
+async function getProductById( id ) {
+    let product = await databaseModel.Products.find({ _id: id })
+    .then( result => result );
+
+    return product;
+}
+
+//function that searches by product id and returns a product description
+async function getProductDescription( id ) {
+    let productName = await databaseModel.Products.find({ _id: id })
+    .then( result => result[0].name );
+    return productName;
+}
+
 /*----- Favorite product -----*/
 
 //function that clears all documents in Favorite Products table
@@ -140,6 +156,7 @@ module.exports.findFavoriteProductId = findFavoriteProductId;
 module.exports.findProductBy = findProductBy;
 module.exports.getProducts = getProducts;
 module.exports.getProductBy = getProductBy;
+module.exports.getProductById = getProductById;
 module.exports.getProductPrice = getProductPrice;
 module.exports.getProductsIdBy = getProductsIdBy; 
 module.exports.getFavoriteProducts = getFavoriteProducts;
@@ -148,3 +165,4 @@ module.exports.insertFavoriteProduct = insertFavoriteProduct;
 module.exports.updateFavorite = updateFavorite;
 module.exports.updateProduct = updateProduct;
 module.exports.validateProduct = validateProduct;
+module.exports.getProductDescription = getProductDescription;

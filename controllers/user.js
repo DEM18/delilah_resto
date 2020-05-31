@@ -47,6 +47,15 @@ async function insertUser( user ) {
     return saveUserId;
 }
 
+
+//function that searches by user id and returns its username
+async function getUserUsername( id ) {
+    let userUsername = await databaseModel.Users.find({ _id: id })
+    .then( user => user[0].username );
+
+    return userUsername;
+}
+
 //function that inserts userid with a roleid
 async function insertUserRole( userRole ) {
     const newUserRole = new databaseModel.UserRoleSchema( userRole ); 
@@ -107,6 +116,29 @@ async function updateUserRole( id , newRoleId ) {
     return newUserRole;
 }
 
+//function that returns users roles in Users table
+async function getUsersRoles() {
+    let usersRoles = await databaseModel.UserRoleSchema.find();
+
+    return usersRoles;
+}
+
+//function that searches by user role id and returns a role id
+async function getUserRoleBy( id ) {
+    let userRole = await databaseModel.UserRoleSchema.find({ _id: id })
+    .then( result => result );
+
+    return userRole;
+}
+
+//function that deletes one user role by id
+async function deleteUserRole( id ) {
+    let deleteUserRole = await databaseModel.UserRoleSchema.deleteOne( { _id: id } )
+    .then( result => result );
+
+    return deleteUserRole;
+}
+
 //function that deletes one user role by id
 async function clearUserRole( userId ) {
     let clearUserRoleId = await databaseModel.UserRoleSchema.deleteOne( { id_user: userId } )
@@ -136,6 +168,9 @@ module.exports.clearUserRole = clearUserRole;
 module.exports.searchUserByCredentials = searchUserByCredentials;
 module.exports.findUserBy = findUserBy;
 module.exports.getUsers = getUsers;
+module.exports.getUsersRoles = getUsersRoles;
+module.exports.getUserRoleBy = getUserRoleBy;
+module.exports.deleteUserRole = deleteUserRole;
 module.exports.getUserBy = getUserBy;
 module.exports.getUserId = getUserId;
 module.exports.getRoleIdBy = getRoleIdBy;
@@ -143,6 +178,7 @@ module.exports.insertUser = insertUser;
 module.exports.insertUserRole = insertUserRole;
 module.exports.updateUser = updateUser;
 module.exports.updateUserRole = updateUserRole;
+module.exports.getUserUsername = getUserUsername;
 
 
 

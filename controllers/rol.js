@@ -33,7 +33,7 @@ async function deleteRole( id ) {
 }
 
 //function that searches by role id and returns a role
-async function getRoleby( id ) {
+async function getRolebyId( id ) {
     let role = await databaseModel.Roles.find({ _id: id })
     .then( result => result );
 
@@ -68,6 +68,7 @@ module.exports.clearRolesDocuments = clearRolesDocuments;
 module.exports.deleteRole = deleteRole
 module.exports.getRoles = getRoles;
 module.exports.getRoleby = getRoleby;
+module.exports.getRolebyId = getRolebyId;
 module.exports.getRoleDescriptionId = getRoleDescriptionId;
 module.exports.insertRole = insertRole;
 module.exports.updateRole = updateRole;
