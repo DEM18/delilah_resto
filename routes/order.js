@@ -1,16 +1,18 @@
-const userController = require('../controllers/user');
-const orderController = require('../controllers/order');
-const productController = require('../controllers/product');
-const rolController = require('../controllers/rol');
-const paymentController = require('../controllers/paymentMethod');
 const express = require('express');
+const router_order = express.Router();
 const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
-const router_order = express.Router();
-const ROLE_ADMIN_DESCRIPTION = "Administrator";
-const ROLE_USER_DESCRIPTION = "User";
 
-router_order.post('/order', validateToken, validateUserRol, validateOrderProps, async ( req, res ) => {
+const orderController = require('../controllers/order');
+const paymentController = require('../controllers/paymentMethod');
+const productController = require('../controllers/product');
+const userController = require('../controllers/user');
+
+const orderMiddleware = require('../middlewares/order');
+const rolesMiddleware = require('../middlewares/roles');
+const tokenMiddleware = require('../middlewares/token');
+
+router_order.post('/order', tokenMiddleware.validateToken, rolesMiddleware.validateRoleUser, orderMiddleware.validatePostOrder, async ( req, res ) => {
      let saveOrder = await orderController.insertOrder( req.body );
 
     if( saveOrder ) {
@@ -19,7 +21,7 @@ router_order.post('/order', validateToken, validateUserRol, validateOrderProps, 
     } 
 });
 
-router_order.patch('/order/:id', validateToken, validateRoleAdmin, validateUpdateOrderProps, async ( req, res ) => {
+router_order.patch('/order/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, orderMiddleware.validateUpdateOrder, async ( req, res ) => {
     const orderId = req.params.id;
 
     let updateOrderId = await orderController.updateOrder( orderId, req.body.status_id );
@@ -30,7 +32,7 @@ router_order.patch('/order/:id', validateToken, validateRoleAdmin, validateUpdat
     }
 });
 
-router_order.delete('/order/:id', validateToken, validateRoleAdmin, async( req, res ) => {
+router_order.delete('/order/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
     const orderId = req.params.id;
 
     let deleteOrder = await orderController.deleteOrder( orderId );
@@ -41,7 +43,7 @@ router_order.delete('/order/:id', validateToken, validateRoleAdmin, async( req, 
     }
 });
 
-router_order.get('/order', validateToken, validateRoleAdmin,  async ( req, res ) => {
+router_order.get('/order', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin,  async ( req, res ) => {
     let orders = await orderController.getOrders();
       
     let newOrders = [];
@@ -60,6 +62,7 @@ router_order.get('/order', validateToken, validateRoleAdmin,  async ( req, res )
         let statusDesc = await orderController.getStatusDesc( orders[i].status_id );
 
         newOrders.push({
+            _id: orders[i]._id,
             products_description: productsDescription,
             username: username,
             payment_description: paymentDescription,
@@ -77,7 +80,7 @@ router_order.get('/order', validateToken, validateRoleAdmin,  async ( req, res )
     return res.json(newOrders);  
 });
 
-router_order.get('/order/:id', validateToken, validateRoleAdmin, async ( req, res ) => {
+router_order.get('/order/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     const orderId  = req.params.id;
 
     let order = await orderController.getOrderBy( orderId )
@@ -99,6 +102,7 @@ router_order.get('/order/:id', validateToken, validateRoleAdmin, async ( req, re
     let statusDesc = await orderController.getStatusDesc( order[0].status_id );  
     
     newOrder.push({
+        _id: order[0]._id,
         products_description: productsDescription,
         username: username,
         payment_description: paymentDescription,
@@ -116,8 +120,8 @@ router_order.get('/order/:id', validateToken, validateRoleAdmin, async ( req, re
     return res.json(newOrder);  
 });
 
-router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) => {
-     try {  
+router_order.get('/myorder', tokenMiddleware.validateToken, rolesMiddleware.validateRoleUser, async ( req, res ) => {
+    try {  
         const token = req.headers.authorization.split(' ')[1];
         const verifyToken = jwt.verify( token, jwtSign );
         //find user id by username in Users table
@@ -126,7 +130,6 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
                 .then( order => order ) );
  
             let newOrders = [];
-            
             for( let i = 0; i < orders.length; i++ ) {
                 let productsDescription = [];
                 for( let j = 0; j < orders[i].products_id.length; j++) {
@@ -139,6 +142,7 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
             let statusDesc = await orderController.getStatusDesc( orders[i].status_id );
 
             newOrders.push({
+                _id: orders[i]._id,
                 products_description: productsDescription,
                 username: username,
                 payment_description: paymentDescription,
@@ -157,7 +161,7 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
   } 
 });
 
- router_order.get('/myorder/:id', validateToken, validateUserRol, async ( req, res ) => {
+ router_order.get('/myorder/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleUser, async ( req, res ) => {
     const orderId  = req.params.id;
 
     try { 
@@ -184,6 +188,7 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
             let statusDesc = await orderController.getStatusDesc( order[0].status_id );  
             
             newOrder.push({
+                _id: order[0]._id,
                 products_description: productsDescription,
                 username: username,
                 payment_description: paymentDescription,
@@ -205,7 +210,7 @@ router_order.get('/myorder', validateToken, validateUserRol, async ( req, res ) 
 
 /*----- order status ----*/
 
-router_order.post('/createstatus', validateToken, validateRoleAdmin, validateStatusProps, async ( req, res ) => {
+router_order.post('/createstatus', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, orderMiddleware.validateStatusOrderProps, async ( req, res ) => {
     let saveOrderStatus = await orderController.insertOrderStatus( req.body );
 
     if( saveOrderStatus ) {
@@ -215,14 +220,14 @@ router_order.post('/createstatus', validateToken, validateRoleAdmin, validateSta
      
 });
  
-router_order.get('/status', validateToken, validateRoleAdmin, async ( req, res ) => {
+router_order.get('/status', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     let ordersStatus = await orderController.getOrdersStatus();
 
     res.statusCode = 200;
     res.json( ordersStatus );
 });
 
-router_order.get('/status/:id', validateToken, validateRoleAdmin, async ( req, res ) => {
+router_order.get('/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     const statusId = req.params.id;
     let status = await orderController.getOrderStatusBy( statusId )
     .then( result => result );
@@ -232,7 +237,7 @@ router_order.get('/status/:id', validateToken, validateRoleAdmin, async ( req, r
     
 });
 
-router_order.delete('/status/:id', validateToken, validateRoleAdmin, async( req, res ) => {
+router_order.delete('/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
     const statusId = req.params.id;
 
     let deleteStatus = await orderController.deleteOrderStatus( statusId );
@@ -243,7 +248,7 @@ router_order.delete('/status/:id', validateToken, validateRoleAdmin, async( req,
     }
 })
 
-router_order.patch('/status/:id', validateStatusProps, validateToken, validateRoleAdmin, async ( req, res ) => {
+router_order.patch('/status/:id',  tokenMiddleware.validateToken,  rolesMiddleware.validateRoleAdmin, orderMiddleware.validateStatusOrderProps, async ( req, res ) => {
     const statusId = req.params.id;
 
     let updateStatusId = await orderController.updateOrderStatus( statusId, req.body.description );
@@ -253,114 +258,6 @@ router_order.patch('/status/:id', validateStatusProps, validateToken, validateRo
         res.json("Order status updated sucessfully");
     }
 })
-
-
-/*---- Middlewares -----*/
-
-//function that validates properties sent by request
-function validateStatusProps(  req, res, next ) {
-    const { description } = req.body;
-
-    if( !description ) {
-        res.statusCode = 400;
-        res.json("Invalid properties");
-    } else {
-        next();
-    }
-}
-
-//function that verifies token generated
-function validateToken( req, res , next ) {
-    try { 
-        const token = req.headers.authorization.split(' ')[1];
-        const verifyToken = jwt.verify( token, jwtSign );
-
-        if( verifyToken ) {
-            return next();
-        } 
-    } catch( error ) {
-        res.statusCode = 401;
-        res.json(error);
-  }
-}
-
-//function that validates if user has admin role
-async function validateRoleAdmin( req, res , next ) {
-    try { 
-        const token = req.headers.authorization.split(' ')[1];
-        const verifyToken = jwt.verify( token, jwtSign );
-        //find user id by username in Users table
-        let rolDescription = await userController.getUserId( verifyToken )
-        //find role id by user id in UserRole table
-        .then( async (userId) => await userController.getRoleIdBy( userId )
-            //find role description by role id 
-            .then( async (roleId) => await rolController.getRoleby( roleId )
-                .then( async (rolDesc) => rolDesc )
-            )
-        );
-        if( rolDescription === ROLE_ADMIN_DESCRIPTION ) {
-            next();
-        } else {
-            res.statusCode = 401;
-            res.json("User not authorized");
-        }
- 
-    } catch( error ) {
-        res.statusCode = 401;
-        res.json(error); 
-  }
-}
-
-//function that validates if user has User role
-async function validateUserRol( req, res , next ) {
-    try { 
-        const token = req.headers.authorization.split(' ')[1];
-        const verifyToken = jwt.verify( token, jwtSign );
-        //find user id by username in Users table
-        let rolDescription = await userController.getUserId( verifyToken )
-        //find role id by user id in UserRole table
-        .then( async (userId) => await userController.getRoleIdBy( userId )
-            //find role description by role id 
-            .then( async (roleId) => await rolController.getRoleby( roleId )
-                .then( async (rolDesc) => rolDesc )
-            )
-        );
-        if( rolDescription === ROLE_USER_DESCRIPTION ) {
-            next();
-        } else {
-            res.statusCode = 401;
-            return res.json("User not authorized");
-        }
- 
-    } catch( error ) {
-        res.statusCode = 401;
-        return res.json(error); 
-  }
-}
-
-//function that validates properties sent by request
-function validateOrderProps(  req, res, next ) {
-    const { productsId, usernameId, payment_methodId, delivery_address } = req.body;
-    if( !productsId || !usernameId || !payment_methodId || !delivery_address || !Array.isArray(req.body.productsId) || !req.body.productsId.length  ) {
-        res.statusCode = 400;
-        res.json("Invalid properties");
-    } else {
-        next();
-    }
-}
-
-//function that validates properties sent by request
-function validateUpdateOrderProps(  req, res, next ) {
-    const { status_id } = req.body;
-
-    if( !status_id ) {
-        res.statusCode = 400;
-        res.json("Invalid properties");
-    } else {
-        next();
-    }
-}
-
 
 
 module.exports = router_order;

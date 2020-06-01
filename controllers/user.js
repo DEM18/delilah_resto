@@ -1,5 +1,5 @@
 const databaseModel = require('../models/Users'); 
-const rolController = require('../controllers/rol');
+const roleController = require('./role');
 const ROLE_USER_DESCRIPTION = "User" ;
 
 //function that look for user by username or email and password in database
@@ -33,7 +33,7 @@ async function insertUser( user ) {
     let saveUserId = await newUser.save()
     .then(user => user._id);
 
-    let rolUserId = await rolController.getRoleDescriptionId( ROLE_USER_DESCRIPTION )
+    let rolUserId = await roleController.getRoleDescriptionId( ROLE_USER_DESCRIPTION )
     .then( result => result);
 
     let userRole = {
