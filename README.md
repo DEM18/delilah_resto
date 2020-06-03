@@ -27,9 +27,9 @@ mongo scripts\initDB.js
 download --> https://www.mongodb.com/products/compass
 
 6. Another way for testing, go to the MongoDB installation path, open bin file and run in console the following commands:
- mongo
- use database
- db.users.find()
+ * mongo
+ * use database
+ * db.users.find()
  
  User Admin previously created will be shown.
  
