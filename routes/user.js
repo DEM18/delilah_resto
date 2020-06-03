@@ -85,7 +85,7 @@ router.delete('/user/:id', tokenMiddleware.validateToken, rolesMiddleware.valida
 
 /*--- User role ----*/
 
-router.patch('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, userMiddleware.validatePatchUserRole,  async ( req, res ) => {
+router.patch('/user/role/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, userMiddleware.validatePatchUserRole,  async ( req, res ) => {
     const idUser = req.params.id;
     const updateUserRoleId = req.body.id_rol;
    
@@ -97,14 +97,14 @@ router.patch('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.val
     } 
 });
 
-router.get('/userrole', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+router.get('/user/role', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     let userRoles = await userController.getUsersRoles();
 
     res.statusCode = 200;
     res.json( userRoles );
 });
 
-router.get('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+router.get('/user/role/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     const userRoleId = req.params.id;
     let userRole = await userController.getUserRoleBy( userRoleId )
     .then( result => result );
@@ -114,7 +114,7 @@ router.get('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.valid
     
 });
 
-router.delete('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
+router.delete('/user/role/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
     const userRoleId = req.params.id;
 
     let deleteUserRoleId = await userController.deleteUserRole( userRoleId );

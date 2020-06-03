@@ -8,7 +8,7 @@ const userRoleMiddleware = require('../middlewares/userRole');
 
 const router_role = express.Router();
 
-router_role.post('/createrole',tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, userRoleMiddleware.validateRoleProperties, async ( req, res ) => {
+router_role.post('/role',tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, userRoleMiddleware.validateRoleProperties, async ( req, res ) => {
     let saveRole = await roleController.insertRole( req.body );
 
     if( saveRole ) {

@@ -65,7 +65,7 @@ router_product.get('/product', tokenMiddleware.validateToken, rolesMiddleware.va
     res.json( products );
 });
 
-router_product.post('/createproduct', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, productMiddleware.validatePostProduct, async ( req, res ) => {
+router_product.post('/product', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, productMiddleware.validatePostProduct, async ( req, res ) => {
     let saveProduct = await productController.insertProduct( req.body );
 
     if( saveProduct ) {

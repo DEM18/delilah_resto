@@ -210,7 +210,7 @@ router_order.get('/myorder', tokenMiddleware.validateToken, rolesMiddleware.vali
 
 /*----- order status ----*/
 
-router_order.post('/createstatus', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, orderMiddleware.validateStatusOrderProps, async ( req, res ) => {
+router_order.post('/order/status', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, orderMiddleware.validateStatusOrderProps, async ( req, res ) => {
     let saveOrderStatus = await orderController.insertOrderStatus( req.body );
 
     if( saveOrderStatus ) {
@@ -220,14 +220,14 @@ router_order.post('/createstatus', tokenMiddleware.validateToken, rolesMiddlewar
      
 });
  
-router_order.get('/status', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+router_order.get('/order/status', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     let ordersStatus = await orderController.getOrdersStatus();
 
     res.statusCode = 200;
     res.json( ordersStatus );
 });
 
-router_order.get('/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+router_order.get('/order/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
     const statusId = req.params.id;
     let status = await orderController.getOrderStatusBy( statusId )
     .then( result => result );
@@ -237,7 +237,7 @@ router_order.get('/status/:id', tokenMiddleware.validateToken, rolesMiddleware.v
     
 });
 
-router_order.delete('/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
+router_order.delete('/order/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
     const statusId = req.params.id;
 
     let deleteStatus = await orderController.deleteOrderStatus( statusId );
@@ -248,7 +248,7 @@ router_order.delete('/status/:id', tokenMiddleware.validateToken, rolesMiddlewar
     }
 })
 
-router_order.patch('/status/:id',  tokenMiddleware.validateToken,  rolesMiddleware.validateRoleAdmin, orderMiddleware.validateStatusOrderProps, async ( req, res ) => {
+router_order.patch('/order/status/:id',  tokenMiddleware.validateToken,  rolesMiddleware.validateRoleAdmin, orderMiddleware.validateStatusOrderProps, async ( req, res ) => {
     const statusId = req.params.id;
 
     let updateStatusId = await orderController.updateOrderStatus( statusId, req.body.description );
