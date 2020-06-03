@@ -9,7 +9,7 @@ const rolesSchema =  new mongoose.Schema({
 
 
 //create roles model from rolesSchema
-const Roles = mongoose.model("Roles", rolesSchema); 
+const Roles = mongoose.model("roles", rolesSchema, "roles"); 
 
 
 module.exports.Roles = Roles;

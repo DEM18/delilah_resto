@@ -17,7 +17,7 @@ const usersSchema =  new mongoose.Schema({
 const userRolesSchema =  new mongoose.Schema({ 
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users"
+        ref: "users"
     },
     id_rol: {
         type: mongoose.Schema.Types.ObjectId,
@@ -27,9 +27,9 @@ const userRolesSchema =  new mongoose.Schema({
 
 
 //create users model from usersSchema
-const Users = mongoose.model("Users", usersSchema); 
+const Users = mongoose.model("users", usersSchema, "users"); 
 //create userRole model from userRolesSchema
-const UserRoleSchema = mongoose.model("UserRol", userRolesSchema);
+const UserRoleSchema = mongoose.model("usersroles", userRolesSchema, "usersroles" );
 
 module.exports.Users = Users;
 module.exports.UserRoleSchema = UserRoleSchema;

@@ -13,14 +13,14 @@ const productsSchema =  new mongoose.Schema({
 const favoriteProductsSchema =  new mongoose.Schema({ 
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Products"
+        ref: "products"
     }
 });
 
 //create products model from ProductsSchema
-const Products = mongoose.model("Products", productsSchema); 
+const Products = mongoose.model("products", productsSchema, "products"); 
 //create favorite products model from FavoriteProductsSchema
-const FavoriteProducts = mongoose.model("FavoriteProducts", favoriteProductsSchema);
+const FavoriteProducts = mongoose.model("favoriteproducts", favoriteProductsSchema, "favoriteproducts");
 
 module.exports.Products = Products;
 module.exports.FavoriteProducts = FavoriteProducts;

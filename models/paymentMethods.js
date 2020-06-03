@@ -9,7 +9,7 @@ const paymentMethodSchema =  new mongoose.Schema({
 
 
 //create paymentMethod model from paymentMethodSchema
-const PaymentMethods = mongoose.model("PaymentMethods", paymentMethodSchema); 
+const PaymentMethods = mongoose.model("paymentmethods", paymentMethodSchema, "paymentmethods"); 
 
 
 module.exports.PaymentMethods = PaymentMethods;

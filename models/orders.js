@@ -23,7 +23,7 @@ const orderSchema =  new mongoose.Schema({
     },
     status_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "OrderStatus"
+        ref: "orderstatus"
     }, 
     total: Number,
     delivery_address: String
@@ -36,8 +36,8 @@ const orderStatusSchema =  new mongoose.Schema({
 });
 
 //create order status model from orderStatusSchema
-const OrderStatus = mongoose.model("OrderStatus", orderStatusSchema);  
-const Orders = mongoose.model("Orders", orderSchema);
+const OrderStatus = mongoose.model("orderstatus", orderStatusSchema, "orderstatus");  
+const Orders = mongoose.model("orders", orderSchema, "orders");
 
 
 
