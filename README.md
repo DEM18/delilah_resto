@@ -10,21 +10,22 @@ Delilah_resto was developed with Javascript, NodeJs and MongoDB.
 
 # Installation
 
-In order to initialize MongoDB and database, please follow the steps:
+In order to initialize MongoDB database, please follow the next steps:
 
 1. Install in your local machine Mongo DB.
-download Community Server --> https://www.mongodb.com/
+* download Community Server --> https://www.mongodb.com/
 
-2. Go to the MongoDB installation path, open bin file and run in console the command: mongod --dbpath .. \ data \ db
+2. Go to the MongoDB installation path, open bin file and run in console the command: 
+* mongod --dbpath .. \ data \ db
 
 3. Go to the MongoDB installation path, open bin file and run in a new console the command:
-mongo scripts\initDB.js
+* mongo scripts\initDB.js
 
 4. Once database collections were created, a message will be shown:
-"SCRIPT FINISHED"
+* "SCRIPT FINISHED"
 
-5. For testing database collections were created sucessfully, we recommend to use Compass MongoDB 
-download --> https://www.mongodb.com/products/compass
+5. For testing that database collections were created sucessfully, download Compass MongoDB and connect database to port 27017.
+* download --> https://www.mongodb.com/products/compass
 
 6. Another way for testing, go to the MongoDB installation path, open bin file and run in console the following commands:
  * mongo
@@ -36,6 +37,7 @@ download --> https://www.mongodb.com/products/compass
 
 # Initialize server
 
-1. Go to delilah_resto path and run in console the command: node server.js 
+1. Go to delilah_resto project path and run in console the command: 
+* node server.js 
 
 Application will start to run in port 3000
