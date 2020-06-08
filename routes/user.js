@@ -1,10 +1,19 @@
-const userController = require('../controllers/user');
+
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
+
+const userController = require('../controllers/user');
+
+const userMiddleware = require('../middlewares/user');
+const tokenMiddleware = require('../middlewares/token');
+const rolesMiddleware = require('../middlewares/roles');
+
+const jwt = require('jsonwebtoken');
 const jwtSign = "mytokenpassword";
 
-router.post( '/login', validateCredentials, async ( req, res ) => {
+
+
+router.post( '/login', userMiddleware.loginValidation, async ( req, res ) => {
     const { username, password } = req.body;
     let findUser = await userController.searchUserByCredentials( username, password );
 
@@ -20,7 +29,14 @@ router.post( '/login', validateCredentials, async ( req, res ) => {
     } 
 });
 
-router.post( '/register', validateProperties, async ( req, res ) => {
+router.get('/user', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+    let users = await userController.getUsers();
+    
+    res.statusCode = 200;
+    res.json( users );
+});
+
+router.post( '/register', userMiddleware.validatePostUser, async ( req, res ) => {
     const { username, email } = req.body;
     let findUser = await userController.findUserBy( username, email );
 
@@ -37,29 +53,77 @@ router.post( '/register', validateProperties, async ( req, res ) => {
     }
 });
 
-function validateProperties( req, res, next ) {
-    const { username, name_lastname, email, telephone, delivery_address, password } = req.body;
-
-    if( username && name_lastname && email && telephone && delivery_address && password ) {
-        next();
-    } else {
-        res.statusCode = 400;
-        res.json("Invalid properties");
-    }
-}
-
-
-//function that validates user credentials for login
-function validateCredentials( req, res, next ) { 
-    const { username, password } = req.body;
-    if( !username || !password ) { 
-        res.statusCode = 400;
-        res.json("Invalid credentials");
+router.patch('/user/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleUser, userMiddleware.validatePatchUser, async ( req, res ) => {
+    const idUser = req.params.id;
+    const updateUuser = req.body;
+   
+ let updateUser = await userController.updateUser( idUser, updateUuser );
+    //Analyze if update was made sucessfully
+    if( updateUser.ok === 1 ){
+        res.statusCode = 200;
+        res.json("user updated sucessfully");
     } 
-    next();
-}
+    
+    if ( !updateUser ) {
+        res.statusCode = 403;
+        res.json("Username or email already exits");
+    }
 
+});
+
+router.delete('/user/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
+    const userId = req.params.id;
+
+    let deleteUserId = await userController.clearUser( userId );
+
+    if( deleteUserId.ok === 1 ) {
+        let deleteUserRoleId = await userController.clearUserRole( userId );
+        res.statusCode = 200;
+        res.json("user deleted sucessfully");
+    }
+})
+
+/*--- User role ----*/
+
+router.patch('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, userMiddleware.validatePatchUserRole,  async ( req, res ) => {
+    const idUser = req.params.id;
+    const updateUserRoleId = req.body.id_rol;
+   
+ let updateUser = await userController.updateUserRole( idUser, updateUserRoleId );
+    //Analyze if update was made sucessfully
+    if( updateUser.ok === 1 ){
+        res.statusCode = 200;
+        res.json("user role updated sucessfully");
+    } 
+});
+
+router.get('/userrole', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+    let userRoles = await userController.getUsersRoles();
+
+    res.statusCode = 200;
+    res.json( userRoles );
+});
+
+router.get('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {
+    const userRoleId = req.params.id;
+    let userRole = await userController.getUserRoleBy( userRoleId )
+    .then( result => result );
+
+    res.statusCode = 200;
+    return res.json(userRole);
+    
+});
+
+router.delete('/userrole/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async( req, res ) => {
+    const userRoleId = req.params.id;
+
+    let deleteUserRoleId = await userController.deleteUserRole( userRoleId );
+
+    if( deleteUserRoleId ) {
+        res.statusCode = 200;
+        res.json("user role deleted sucessfully");
+    }
+})
 
 
 module.exports = router;
-module.exports.jwtSign = jwtSign;
