@@ -4,7 +4,7 @@ function validateRoleProperties(  req, res, next ) {
 
     if( !description ) {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     } else {
         next();
     }

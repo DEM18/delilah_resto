@@ -87,7 +87,6 @@ async function insertOrderStatus( orderStatus ) {
 //function that returns orders status in OrderStatus table
 async function getOrdersStatus() {
     let ordersStatus = await databaseModel.OrderStatus.find();
-
     return ordersStatus;
 }
 

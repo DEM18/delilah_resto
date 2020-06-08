@@ -6,7 +6,7 @@ function validatePostUser( req, res, next ) {
         next();
     } else {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     }
 }
 
@@ -15,7 +15,7 @@ function loginValidation( req, res, next ) {
     const { username, password } = req.body;
     if( !username || !password ) { 
         res.statusCode = 400;
-        res.json("Invalid credentials");
+        res.json("invalid credentials");
     } 
     next();
 }
@@ -35,7 +35,7 @@ function validatePatchUser( req, res, next ) {
 function validatePatchUserRole(  req, res, next ) {
     if( !req.body.id_role ) {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     } else {
         next();
     }

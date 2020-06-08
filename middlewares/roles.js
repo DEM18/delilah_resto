@@ -25,7 +25,7 @@ async function validateRoleUser( req, res , next ) {
             next();
         } else {
             res.statusCode = 401;
-            return res.json("User not authorized");
+            return res.json("user not authorized");
         }
  
     } catch( error ) {
@@ -53,7 +53,7 @@ async function validateRoleAdmin( req, res , next ) {
             next();
         } else {
             res.statusCode = 401;
-            res.json("User not authorized");
+            res.json("user not authorized");
         }
  
     } catch( error ) {

@@ -4,7 +4,7 @@ function validatePostOrder(  req, res, next ) {
     const { productsId, usernameId, payment_methodId, delivery_address } = req.body;
     if( !productsId || !usernameId || !payment_methodId || !delivery_address || !Array.isArray(req.body.productsId) || !req.body.productsId.length  ) {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     } else {
         next();
     }
@@ -17,7 +17,7 @@ function validateUpdateOrder(  req, res, next ) {
 
     if( !status_id ) {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     } else {
         next();
     }
@@ -29,7 +29,7 @@ function validateStatusOrderProps(  req, res, next ) {
 
     if( !description ) {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     } else {
         next();
     }

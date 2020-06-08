@@ -17,18 +17,18 @@ router_order.post('/order', tokenMiddleware.validateToken, rolesMiddleware.valid
 
     if( saveOrder ) {
         res.statusCode = 200;  
-        return res.json("order status added sucessfully");
+        return res.json("order added sucessfully");
     } 
 });
 
 router_order.patch('/order/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, orderMiddleware.validateUpdateOrder, async ( req, res ) => {
     const orderId = req.params.id;
 
-    let updateOrderId = await orderController.updateOrder( orderId, req.body.status_id );
+    let updateOrderId = await orderController.updateOrder( orderId, req.body.orderStatusId );
     //Analyze if update was made sucessfully
     if( updateOrderId.ok === 1 ){
         res.statusCode = 200;
-        res.json("Order status updated sucessfully");
+        res.json("order status updated sucessfully");
     }
 });
 
@@ -39,7 +39,7 @@ router_order.delete('/order/:id', tokenMiddleware.validateToken, rolesMiddleware
 
     if( deleteOrder ) {
         res.statusCode = 200;
-        res.json("Order status deleted sucessfully");
+        res.json("order deleted sucessfully");
     }
 });
 
@@ -69,7 +69,6 @@ router_order.get('/order', tokenMiddleware.validateToken, rolesMiddleware.valida
             status_description: statusDesc,
             total: orders[i].total,
             delivery_address: orders[i].delivery_address,
-            username: user[0].username,
             name_lastname: user[0].name_lastname,
             user_email: user[0].email,
             user_telephone: user[0].telephone,
@@ -109,7 +108,6 @@ router_order.get('/order/:id', tokenMiddleware.validateToken, rolesMiddleware.va
         status_description: statusDesc,
         total: order[0].total,
         delivery_address: order[0].delivery_address,
-        username: user[0].username,
         name_lastname: user[0].name_lastname,
         user_email: user[0].email,
         user_telephone: user[0].telephone,
@@ -224,7 +222,7 @@ router_order.get('/order/status', tokenMiddleware.validateToken, rolesMiddleware
     let ordersStatus = await orderController.getOrdersStatus();
 
     res.statusCode = 200;
-    res.json( ordersStatus );
+    return res.json( ordersStatus );
 });
 
 router_order.get('/order/status/:id', tokenMiddleware.validateToken, rolesMiddleware.validateRoleAdmin, async ( req, res ) => {

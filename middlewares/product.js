@@ -4,13 +4,13 @@ function validatePostFavorite( req, res, next ) {
         req.body.products.forEach( productId => {
             if( !productId ) {
                 res.statusCode = 400;
-                return res.json("Invalid properties");
+                return res.json("invalid properties");
             } 
         })
         next(); 
     } else {
     res.statusCode = 400;
-    return res.json("Invalid properties");  
+    return res.json("invalid properties");  
     }
 }
 
@@ -34,7 +34,7 @@ function validatePostProduct( req, res , next ){
         next();
     } else {
         res.statusCode = 400;
-        res.json("Invalid properties");
+        res.json("invalid properties");
     }
 }
 

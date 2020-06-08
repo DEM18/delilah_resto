@@ -1,0 +1,1241 @@
+openapi: 3.0.1
+info:
+  title: Delilah resto API
+  description: 'Servicios REST para los distintos productos y usuarios'
+  contact:
+    email: morenodanielaeliana@gmail.com
+  version: 1.0.0
+tags:
+- name: order
+  description: Todo acerca de los pedidos
+- name: order status
+  description: Todo acerca de los estados de los pedidos
+- name: user
+  description: Todo acerca de los usuarios
+- name: user role
+  description: Todo acerca de los usuarios y sus roles
+- name: role
+  description: Todo acerca de los roles
+- name: payment method
+  description: Todo acerca de los medios de pago
+- name: product
+  description: Todo acerca de los productos
+- name: product favorite
+  description: Todo acerca de los productos favoritos
+paths:
+  /order:
+    post:
+      tags:
+      - order
+      summary: Agregar un nuevo pedido
+      requestBody:
+        description: Detalle del pedido que se desea agregar. Usuario con rol de usuario puede agregar un pedido
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              usernameId: 
+                type: string
+                example: "5ed2b31fcf481e34185ddf85"
+              productsId: 
+                type: array
+                items:
+                  example:
+                  - "5ed2b31fcf481e34185ddf85"
+                  - "5ed2b7edab3fcc2b48a73bb3"
+              payment_methodId: 
+                type: string
+                example: "5ed2c09aab3fcc2b48a73bc8"
+              delivery_address: 
+                type: string
+                example: "Avellaneda 1235"
+        required: true
+      responses:
+        200:
+          description: order added sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+      x-codegen-request-body-name: body
+    get:
+      tags:
+      - order
+      summary: Obtener todos los pedidos
+      description: Usuario con rol de administrador puede obtener todos los pedidos
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /order/{id}:
+    patch:
+      tags:
+      - order
+      summary: Modificar un pedido
+      parameters:
+      - name: id
+        in: path
+        description: ID del pedido a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con el ID del status correspondiente se quiere modificar. Usuario con rol de administrador puede modificar un pedido
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              orderStatusId: 
+                type: string
+                example: "5ecae9e330c1b02f10cd7acb"
+        required: true
+      responses:
+        200:
+          description: order status updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - order
+      summary: Eliminar un pedido por ID
+      description: Usuario con rol de administrador puede eliminar un pedido.
+      parameters:
+      - name: id
+        in: path
+        description: ID del pedido que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: order deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - order
+      summary: Obtener un pedido por ID
+      description: Usuario con rol de administrar puede obtener un pedido por ID
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: string
+        required: true
+        description: ID del pedido que se quiere obtener
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref:  '#/components/schemas/Order'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /myorder: 
+    get:
+      tags:
+      - order
+      summary: Obtener el pedido del usuario
+      description: El usuario con rol de usuario solo podrá ver los pedidos realizados por si mismo.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/MyOrders'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /myorder/{id}: 
+    get:
+      tags:
+      - order
+      summary: Obtener el pedido del usuario por ID
+      description: Usuario con rol de usuario puede obtener un pedido por ID realizado por si mismo.
+      parameters:
+      - name: id
+        in: path
+        description: ID del pedido que se quiere obtener
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/MyOrder'
+        401:
+          description: user not authorized
+          content: {}
+  /order/status:
+    post:
+      tags:
+      - order status
+      summary: Agregar un nuevo estado de un pedido
+      requestBody:
+        description: Detalle del estado que se desea agregar. Usuario con rol de administrador puede agregar un nuevo estado.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "Nuevo"
+        required: true
+      responses:
+        200:
+          description: order status added sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - order status
+      summary: Obtener todos los estados de pedidos
+      description: Usuario con rol de administrador puede obtener todos los estados de pedidos
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatuses'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /order/status/{id}:
+    patch:
+      tags:
+      - order status
+      summary: Modificar un estado de pedido
+      parameters:
+      - name: id
+        in: path
+        description: ID del estado de pedido a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con el ID del estado del pedido correspondiente se quiere modificar. Usuario con rol de administrador puede modificar un estado de pedido
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "En camino"
+        required: true
+      responses:
+        200:
+          description: order status updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - order status
+      summary: Eliminar un estado de pedido por ID
+      description: Usuario con rol de administrador puede eliminar un estado de pedido.
+      parameters:
+      - name: id
+        in: path
+        description: ID del estado de pedido que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: order status deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - order status
+      summary: Obtener un estado de pedido por ID
+      description: Usuario con rol de administrar puede obtener un estado de pedido por ID
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: string
+        required: true
+        description: ID del estado de pedido que se quiere obtener
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref:  '#/components/schemas/OrderStatus'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /login:
+    post:
+      tags:
+      - user
+      summary: Iniciar sesión en la plataforma
+      requestBody:
+        description: Permite iniciar sesión a un usuario
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              username: 
+                type: string
+                example: "danim18"
+              password: 
+                type: string
+                example: "da1234asf"
+        required: true
+      responses:
+        200:
+          description: order status added sucessfully
+          content: 
+            application/json:
+              schema:
+                $ref:  '#/components/schemas/token'
+        400:
+          description: user not found
+          content: {}
+      security:
+      - bearerAuth: []     
+  /user:
+    get:
+      tags:
+      - user
+      summary: Obtener todos los usuarios
+      description: Usuario con rol de administrar puede obtener todos los usuarios
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref:  '#/components/schemas/Users'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /register:
+    post:
+      tags:
+      - user
+      summary: Registrar un nuevo usuario 
+      requestBody:
+        description: Detalle del usuario que se desea agregar.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              username: 
+                type: string
+                example: "danielam18"
+              name_lastname: 
+                type: string
+                example: "Daniela Moreno"
+              email: 
+                type: string
+                example: "damoreno@gmail.com"
+              telephone: 
+                type: string
+                example: "1154896542"
+              delivery_address: 
+                type: string
+                example: "Avellaneda 1245"
+              password: 
+                type: string
+                example: "asd123346"
+        required: true
+      responses:
+        200:
+          description: user succesfully registered
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        403:
+          description: username or email already exits
+          content: {}
+      security:
+      - bearerAuth: []     
+  /user/{id}:
+    patch:
+      tags:
+      - user
+      summary: Modificar la información de un usuario por ID
+      parameters:
+      - name: id
+        in: path
+        description: ID del usuario a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con la información correspondiente se quiere modificar. Usuario con rol de usuario puede modificar su información, excepto su username.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              telephone: 
+                type: string
+                example: "1154896542"
+        required: true
+      responses:
+        200:
+          description: user updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - user
+      summary: Eliminar un usuario por ID
+      description: Usuario con rol de administrador puede eliminar usuario por ID
+      parameters:
+      - name: id
+        in: path
+        description: ID del usuario que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: user deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /role:
+    post:
+      tags:
+      - role
+      summary: Agregar un nuevo rol
+      requestBody:
+        description: Detalle del rol que se desea agregar. Usuario con rol de administrador puede agregar un nuevo rol.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "Supplier"
+        required: true
+      responses:
+        200:
+          description: role added sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - role
+      summary: Obtener todos roles
+      description: Usuario con rol de administrador puede obtener todos los roles 
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Roles'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /role/{id}:
+    patch:
+      tags:
+      - role
+      summary: Modificar un rol por su ID
+      parameters:
+      - name: id
+        in: path
+        description: ID del rol a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con la descripcion correspondiente que se quiere modificar. Usuario con rol de administrador puede modificar un rol.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "Vendor"
+        required: true
+      responses:
+        200:
+          description: role updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - role
+      summary: Eliminar un rol por ID
+      description: Usuario con rol de administrador puede eliminar un rol.
+      parameters:
+      - name: id
+        in: path
+        description: ID del rol que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: rol deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - role
+      summary: Obtener un rol por ID
+      description: Usuario con rol de administrar puede obtener un rol.
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: string
+        required: true
+        description: ID del rol que se quiere obtener
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []     
+  /user/role:
+    get:
+      tags:
+      - user role
+      summary: Obtener todos usuarios y roles
+      description: Usuario con rol de administrador puede obtener todos los usuarios con roles
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoles'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /user/role/{id}:
+    patch:
+      tags:
+      - user role
+      summary: Modificar un usuario y rol por su ID
+      parameters:
+      - name: id
+        in: path
+        description: ID del usurio y rol a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con la descripcion correspondiente que se quiere modificar. Usuario con rol de administrador puede modificar un usuario y rol.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "Supplier"
+        required: true
+      responses:
+        200:
+          description: user role updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - user role
+      summary: Eliminar un usuario y rol por ID
+      description: Usuario con rol de administrador puede eliminar un usuario y rol.
+      parameters:
+      - name: id
+        in: path
+        description: ID del usuario y rol que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: user role deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - user role
+      summary: Obtener un usuario y rol por ID
+      description: Usuario con rol de administrar puede obtener un usuario y rol.
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: string
+        required: true
+        description: ID del usuario y rol que se quiere obtener
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []         
+  /paymentmethod:
+    post:
+      tags:
+      - payment method
+      summary: Agregar un nuevo medio de pago
+      requestBody:
+        description: Detalle del medio de pago que se desea agregar. Usuario con rol de administrador puede agregar un nuevo medio de pago.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "crédito"
+        required: true
+      responses:
+        200:
+          description: payment added sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - payment method
+      summary: Obtener todos los medios de pago
+      description: Usuario con rol de administrador puede obtener todos los medios de pago
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethods'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /paymentmethod/{id}:
+    patch:
+      tags:
+      - payment method
+      summary: Modificar un medio de pago por su ID
+      parameters:
+      - name: id
+        in: path
+        description: ID del medio de pago a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con la descripcion correspondiente que se quiere modificar. Usuario con rol de administrador puede modificar un medio de pago.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              description: 
+                type: string
+                example: "Débito"
+        required: true
+      responses:
+        200:
+          description: payment updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - payment method
+      summary: Eliminar un medio de pago por ID
+      description: Usuario con rol de administrador puede eliminar un medio de pago.
+      parameters:
+      - name: id
+        in: path
+        description: ID del medio de pago que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: payment method deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - payment method
+      summary: Obtener un medio de pago por ID
+      description: Usuario con rol de administrador puede obtener un medio de pago.
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: string
+        required: true
+        description: ID del medio de pago que se quiere obtener
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []     
+  /product:
+    post:
+      tags:
+      - product
+      summary: Agregar un nuevo producto
+      requestBody:
+        description: Detalle del producto que se desea agregar. Usuario con rol de administrador puede agregar un nuevo producto.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              name: 
+                type: string
+                example: "Ensalada"
+              price: 
+                type: string
+                example: "250"
+              image: 
+                type: string
+                example: "http://wwww.google.com/ensalada.img"
+        required: true
+      responses:
+        200:
+          description: product added sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - product
+      summary: Obtener todos los productos
+      description: Usuario con rol de administrador puede obtener todos los productos
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /product/{id}:
+    patch:
+      tags:
+      - product
+      summary: Modificar un producto por su ID
+      parameters:
+      - name: id
+        in: path
+        description: ID del producto a modificar
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objecto con la descripcion correspondiente que se quiere modificar. Usuario con rol de administrador puede modificar un producto.
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              price: 
+                type: string
+                example: "250"
+        required: true
+      responses:
+        200:
+          description: product updated sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - product
+      summary: Eliminar un producto por ID
+      description: Usuario con rol de administrador puede eliminar un producto.
+      parameters:
+      - name: id
+        in: path
+        description: ID del producto que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: product deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get:
+      tags:
+      - product
+      summary: Obtener un producto por ID
+      description: Usuario con rol de administrador puede obtener un producto.
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: string
+        required: true
+        description: ID del producto que se quiere obtener
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []     
+  /favorite:
+    post: 
+      tags:
+      - product favorite
+      summary: Agregar una lista de productos favoritos
+      requestBody:
+        description: Detalle de los producto que se desean agregar. Usuario con rol de administrador puede agregar productos favoritos.
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/FavoriteProducts'
+        required: true
+      responses:
+        200:
+          description: product added sucessfully
+          content: {}
+        400:
+          description: invalid properties
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+    get: 
+      tags:
+      - product favorite
+      summary: Obtener todos los productos favoritos
+      description: Usuario con rol de administrador puede obtener todos los productos favoritos
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteProducts'
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+  /favorite/{id}:
+    delete:
+      tags:
+      - product favorite
+      summary: Eliminar un producto favorito por ID
+      description: Usuario con rol de administrador puede eliminar un producto favorito
+      parameters:
+      - name: id
+        in: path
+        description: ID del producto favorito que se desea eliminar
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: favorite product deleted sucessfully
+          content: {}
+        401:
+          description: user not authorized
+          content: {}
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    Order: 
+      type: object
+      properties:
+        _id: 
+          $ref: '#/components/schemas/orderId'
+        username:
+          $ref: '#/components/schemas/user_username'
+        products_description:
+          type: array
+          items:
+            $ref: '#/components/schemas/product_description'
+        payment_description:
+          $ref: '#/components/schemas/payment_method_description'
+        name_lastname:
+          $ref: '#/components/schemas/user_name_lastname' 
+        status_description:
+          $ref: '#/components/schemas/order_status_description'
+        total:
+          $ref: '#/components/schemas/total'   
+        delivery_address:
+          $ref: '#/components/schemas/user_delivery_address'
+        user_email:
+          $ref: '#/components/schemas/user_email'
+        user_telephone:
+          $ref: '#/components/schemas/user_telephone'
+        user_address:
+          $ref: '#/components/schemas/user_address'
+    Orders:  
+      type: array
+      items:
+        $ref: '#/components/schemas/Order'
+    orderId: 
+      type: string
+      example: '5ed2cbddab3fcc2b48a73bd1'
+    total: 
+      type: string
+      example: '250' 
+    product_description: 
+      type: string
+      example: Focaccia veggie
+    product_price:
+      type: string
+      example: "350"
+    product_image: 
+      type: string
+      example: "https://www.sanpellegrinofruitbeverages.com/es/sites/g/files/xknfdk846/files/focaccia_14.jpg"
+    product_id: 
+      type: string
+      example: "5ed2b8dcab3fcc2b48a73bb6"
+    Product: 
+      type: object
+      properties:
+        _id: 
+          $ref: '#/components/schemas/product_id'
+        name:
+          $ref: '#/components/schemas/product_description'
+        price:
+          $ref: '#/components/schemas/product_price'
+        image:
+          $ref: '#/components/schemas/product_image'
+    Products: 
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+    FavoriteProducts: 
+      type: array
+      items:
+        $ref: '#/components/schemas/FavoriteProduct'
+    FavoriteProduct: 
+      type: object
+      properties:
+        _id:
+          $ref: '#/components/schemas/product_id'
+        favorites_description: 
+          $ref: '#/components/schemas/product_description'
+    userId: 
+      type: string
+      example: '5ed2cbddab3fcc2b48a73bd1'
+    user_username: 
+      type: string
+      example: 'daniela18'
+    user_delivery_address: 
+      type: string
+      example: 'Avellaneda 1200'
+    user_email: 
+      type: string
+      example: 'damoreno@gmail.com'
+    user_name_lastname: 
+      type: string
+      example: "Daniela Moreno"
+    user_telephone: 
+      type: string
+      example: '1158749632'
+    user_address: 
+      type: string
+      example: 'Colón 1343'
+    user_password: 
+      type: string
+      example: "da12548asf"
+    User: 
+      type: object
+      properties:
+        userId: 
+          $ref: '#/components/schemas/userId'
+        username:
+          $ref: '#/components/schemas/user_username'
+        email:
+          $ref: '#/components/schemas/user_email'
+        telephone:
+          $ref: '#/components/schemas/user_telephone'
+        user_address:
+          $ref: '#/components/schemas/user_address'
+        password:
+          $ref: '#/components/schemas/user_password'
+    Users: 
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    MyOrder: 
+      type: object
+      properties:
+        _id: 
+          $ref: '#/components/schemas/orderId'
+        products_description:
+          type: array
+          items:
+            $ref: '#/components/schemas/product_description'
+        payment_description:
+          $ref: '#/components/schemas/payment_method_description'
+        status_description:
+          $ref: '#/components/schemas/order_status_description'
+        total:
+          $ref: '#/components/schemas/total'   
+        delivery_address:
+          $ref: '#/components/schemas/user_delivery_address'
+    MyOrders: 
+      type: array
+      items:
+        $ref: '#/components/schemas/MyOrder'
+    token:
+      type: string
+      example: "eyJhbGciOiJIUzI1NiJ9.SnVhbnBpMQ.UP62-8cma9xvSg7UQ1e3jGhUN5TW4Vtl8ZerZWxg2Bs"
+    order_status_description:
+      type: string
+      example: "En camino"
+    order_status_id: 
+      type: string
+      example: "5ecae9f530c1b02f10cd7acd"
+    OrderStatus: 
+      type: object
+      properties: 
+        _id:
+          $ref: '#/components/schemas/order_status_id'
+        description:
+          $ref: '#/components/schemas/order_status_description'
+    OrderStatuses:
+      type: array
+      items:
+        $ref: '#/components/schemas/OrderStatus'
+    payment_method_description:
+      type: string
+      example: "Efectivo"
+    payment_method_id: 
+      type: string
+      example: "5ecad1cdfb604511247c0c1f"
+    PaymentMethod:
+      type: object
+      properties:
+        _id: 
+          $ref: '#/components/schemas/payment_method_id'
+        description: 
+          $ref: '#/components/schemas/payment_method_description'
+    PaymentMethods:   
+      type: array
+      items:
+        $ref: '#/components/schemas/PaymentMethod'
+    user_role_description:
+      type: string
+      example: "Administrator"
+    user_role_id: 
+      type: string
+      example: "5ebc508d101e9c13f0d9c861"
+    Role:
+      type: object
+      properties:
+        _id: 
+          $ref: '#/components/schemas/user_role_id'
+        description: 
+          $ref: '#/components/schemas/user_role_description'
+    Roles:
+      type: array
+      items:
+        $ref: '#/components/schemas/Role'
+    userrole_id:
+      type: string
+      example: "5ec189b143376d1894835e66"
+    userrole_role_id:
+      type: string
+      example: "5ebc508d101e9c13f0d9c861"
+    userrole_user_id:
+      type: string
+      example: "5ed2cbddab3fcc2b48a73bd1"
+    UserRole: 
+      type: object
+      properties:
+        _id:
+          $ref: '#/components/schemas/userrole_id'
+        id_user:
+          $ref: '#/components/schemas/userrole_user_id'
+        id_rol:
+          $ref: '#/components/schemas/userrole_role_id'
+    UserRoles: 
+      type: array
+      items:
+        $ref: '#/components/schemas/UserRole'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -14,7 +14,8 @@ Para inicializar la base de datos MongoDB, seguir los siguientes pasos:
 * descargar Community Server --> https://www.mongodb.com/
 
 2. Dirigirse a la ruta de instalación de MongoDB, abrir el archivo bin y ejecutar en la consola el comando: 
-* mongod --dbpath .. \ data \ db
+* mongod --dbpath .. \data\db.
+Si un error aparece, iniciar el motor de MongoDB desde el panel de servicios en Windows.
 
 3. Copiar el path del archivo "initBD" que se encuentra en el directorio delilah_resto/src/scripts y luego dirigirse a la ruta de instalación de MongoDB, abrir el archivo bin y ejecutar en una nueva consola el comando:
 * mongo path-file-initDB

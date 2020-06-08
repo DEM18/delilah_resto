@@ -25,7 +25,7 @@ router.post( '/login', userMiddleware.loginValidation, async ( req, res ) => {
     } else {
         res.statusCode = 400;
 
-        return res.json("User not found");
+        return res.json("user not found");
     } 
 });
 
